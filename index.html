@@ -41,9 +41,12 @@
                 soft: '#f3e3d9',
                 ink: '#7d3a1f',
               },
-              danger: { DEFAULT: '#9c3b2c', soft: '#f7e5df', hover: '#863125' },
-              // Verde musgo, dentro da mesma premissa terrosa.
-              success: { DEFAULT: '#5e7048', soft: '#e9eddf' },
+              // Vermelho de celeiro. Terroso, mas afastado o suficiente do
+              // terracota do acento para nao ser confundido com ele.
+              danger: { DEFAULT: '#a32620', soft: '#f7e5df', hover: '#8b201b' },
+              // Verde folha. O musgo anterior tinha saturacao baixa demais e
+              // lia como caqui em um ponto de 8px.
+              success: { DEFAULT: '#4a7a2e', soft: '#e9eddf' },
               // Cinco famiias terrosas distintas, para os tipos continuarem
               // diferenciaveis no mosaico do ano.
               artifact: {
@@ -299,6 +302,11 @@
         }
         .toast--error .toast__dot {
           @apply bg-danger;
+        }
+        /* info alimenta o "Me surpreenda"; sem esta regra o ponto ficava
+           no marrom neutro do padrao, sem significado nenhum. */
+        .toast--info .toast__dot {
+          @apply bg-accent;
         }
         .toast__title {
           @apply font-semibold tracking-tight;
