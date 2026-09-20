@@ -1,0 +1,60 @@
+/* ==========================================================================
+   Estados vazios e indicador de carregamento
+   ========================================================================== */
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-8) var(--space-5);
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface-sunken);
+  text-align: center;
+}
+
+.empty-state__title {
+  font-size: var(--text-md);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-snug);
+  color: var(--color-ink);
+}
+
+.empty-state__message {
+  max-width: 32ch;
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
+}
+
+/* --- Carregando ---------------------------------------------------------- */
+
+.loading {
+  padding: var(--space-7);
+  text-align: center;
+  font-size: var(--text-sm);
+  color: var(--color-ink-subtle);
+}
+
+.loading::after {
+  content: '';
+  display: inline-block;
+  width: 0.75em;
+  text-align: left;
+  animation: loading-dots 1.2s steps(4, end) infinite;
+}
+
+@keyframes loading-dots {
+  0% {
+    content: '';
+  }
+  25% {
+    content: '.';
+  }
+  50% {
+    content: '..';
+  }
+  75% {
+    content: '...';
+  }
+}

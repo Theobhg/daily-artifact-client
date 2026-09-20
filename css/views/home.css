@@ -1,0 +1,85 @@
+/* ==========================================================================
+   View: Home -- o dia de hoje em destaque
+   ========================================================================== */
+
+.today {
+  padding: var(--space-8) var(--space-7);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-md);
+}
+
+.today__weekday {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.today__date {
+  margin-top: var(--space-2);
+  font-size: var(--text-3xl);
+  letter-spacing: var(--tracking-tight);
+}
+
+.today__prompt {
+  max-width: 34ch;
+  margin-top: var(--space-4);
+  font-size: var(--text-md);
+  line-height: var(--leading-snug);
+  color: var(--color-ink-muted);
+}
+
+.today__actions {
+  margin-top: var(--space-6);
+}
+
+/* --- Artefato de hoje ja registrado -------------------------------------- */
+
+.today__artifact {
+  margin-top: var(--space-6);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-border);
+}
+
+.today__artifact-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-4);
+}
+
+.today__artifact-title {
+  font-size: var(--text-xl);
+  letter-spacing: var(--tracking-tight);
+}
+
+.today__artifact-body {
+  margin-top: var(--space-3);
+  font-size: var(--text-md);
+  line-height: var(--leading-normal);
+  color: var(--color-ink-muted);
+  white-space: pre-wrap;
+}
+
+.today__artifact-image {
+  margin-top: var(--space-4);
+  max-height: 22rem;
+  width: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface-sunken);
+}
+
+@media (max-width: 40rem) {
+  .today {
+    padding: var(--space-6) var(--space-5);
+  }
+
+  .today__date {
+    font-size: var(--text-xl);
+  }
+}

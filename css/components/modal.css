@@ -1,0 +1,75 @@
+/* ==========================================================================
+   Modal de confirmacao
+   ========================================================================== */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: var(--space-4);
+}
+
+.modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(26, 24, 21, 0.28);
+  backdrop-filter: blur(2px);
+  animation: modal-fade var(--duration-base) var(--ease);
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.modal__dialog {
+  position: relative;
+  width: 100%;
+  max-width: 26rem;
+  padding: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-lg);
+  animation: modal-rise var(--duration-base) var(--ease);
+}
+
+.modal__title {
+  font-size: var(--text-md);
+  margin-bottom: var(--space-3);
+}
+
+.modal__message {
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
+  margin-bottom: var(--space-6);
+}
+
+.modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
+@keyframes modal-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes modal-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+
+@media (max-width: 30rem) {
+  .modal__actions {
+    flex-direction: column-reverse;
+  }
+
+  .modal__actions .button {
+    width: 100%;
+  }
+}

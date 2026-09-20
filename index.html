@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daily Artifact</title>
+    <meta name="description" content="Um artefato por dia. Uma colecao visual de memorias." />
+
+    <!-- Estilos: tokens, base e layout primeiro; depois componentes e views. -->
+    <link rel="stylesheet" href="./css/tokens.css" />
+    <link rel="stylesheet" href="./css/base.css" />
+    <link rel="stylesheet" href="./css/layout.css" />
+    <link rel="stylesheet" href="./css/components/buttons.css" />
+    <link rel="stylesheet" href="./css/components/forms.css" />
+    <link rel="stylesheet" href="./css/components/cards.css" />
+    <link rel="stylesheet" href="./css/components/tags.css" />
+    <link rel="stylesheet" href="./css/components/modal.css" />
+    <link rel="stylesheet" href="./css/components/toast.css" />
+    <link rel="stylesheet" href="./css/components/empty-state.css" />
+    <link rel="stylesheet" href="./css/views/home.css" />
+    <link rel="stylesheet" href="./css/views/year.css" />
+    <link rel="stylesheet" href="./css/views/collection.css" />
+    <link rel="stylesheet" href="./css/views/detail.css" />
+    <link rel="stylesheet" href="./css/views/editor.css" />
+  </head>
+
+  <body>
+    <div class="app">
+      <!-- Aviso exibido quando a API nao responde. -->
+      <div class="connection-banner" id="connection-banner" role="alert" hidden>
+        <div class="connection-banner__inner">
+          <strong>Nao foi possivel conectar a Daily Artifact API.</strong>
+          Confirme que ela esta rodando em <code id="connection-banner-url"></code>.
+        </div>
+      </div>
+
+      <header class="app-header">
+        <div class="app-header__inner">
+          <a class="brand" href="#/">
+            <span class="brand__name">Daily Artifact</span>
+            <span class="brand__tagline">One day. One artifact.</span>
+          </a>
+
+          <nav class="app-nav" aria-label="Navegacao principal">
+            <a class="app-nav__link" href="#/" data-nav="home">Hoje</a>
+            <a class="app-nav__link" href="#/colecao" data-nav="collection">Colecao</a>
+            <a class="app-nav__link" href="#/ano" data-nav="year">Ano</a>
+            <button class="button button--ghost button--sm" type="button" id="surprise-button">
+              Me surpreenda
+            </button>
+            <a class="button button--primary button--sm" href="#/novo">Registrar</a>
+          </nav>
+        </div>
+      </header>
+
+      <main class="app-main" id="main">
+        <!-- ============================ HOJE ============================ -->
+        <section class="view" data-view="home" aria-labelledby="home-heading" hidden>
+          <h1 class="visually-hidden" id="home-heading">Hoje</h1>
+
+          <article class="today">
+            <p class="today__weekday" id="today-weekday"></p>
+            <p class="today__date" id="today-date"></p>
+
+            <!-- Estado: o dia ainda nao foi registrado. -->
+            <div id="today-empty" hidden>
+              <p class="today__prompt">
+                Voce ainda nao guardou nada de hoje. O que vale a pena lembrar?
+              </p>
+              <div class="today__actions">
+                <a class="button button--accent button--lg" href="#/novo">
+                  Registrar o artefato de hoje
+                </a>
+              </div>
+            </div>
+
+            <!-- Estado: o dia ja tem um artefato. -->
+            <div class="today__artifact" id="today-filled" hidden>
+              <div class="today__artifact-meta">
+                <span class="type-badge" id="today-type"></span>
+              </div>
+              <h2 class="today__artifact-title" id="today-title"></h2>
+              <img class="today__artifact-image" id="today-image" alt="" hidden />
+              <p class="today__artifact-body" id="today-body"></p>
+              <div class="today__actions">
+                <a class="button button--secondary" id="today-open" href="#/">Ver o artefato</a>
+              </div>
+            </div>
+          </article>
+
+          <section class="section" aria-labelledby="recent-heading">
+            <div class="section__header">
+              <h2 class="section__title" id="recent-heading">Artefatos recentes</h2>
+              <a class="button button--ghost button--sm" href="#/colecao">Ver a colecao</a>
+            </div>
+            <div id="recent-container"></div>
+          </section>
+        </section>
+
+        <!-- ========================== COLECAO =========================== -->
+        <section class="view" data-view="collection" aria-labelledby="collection-heading" hidden>
+          <h1 class="editor__title" id="collection-heading">A colecao</h1>
+          <p class="editor__subtitle">Tudo o que voce guardou ate agora.</p>
+
+          <form class="filters" id="filters-form" aria-label="Filtros da colecao">
+            <div class="field">
+              <label class="field__label" for="filter-type">Tipo</label>
+              <select class="select" id="filter-type" name="type">
+                <option value="">Todos</option>
+                <option value="text">Texto</option>
+                <option value="quote">Citacao</option>
+                <option value="photo">Foto</option>
+                <option value="link">Link</option>
+                <option value="music">Musica</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label class="field__label" for="filter-year">Ano</label>
+              <select class="select" id="filter-year" name="year">
+                <option value="">Todos</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label class="field__label" for="filter-month">Mes</label>
+              <select class="select" id="filter-month" name="month">
+                <option value="">Todos</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label class="field__label" for="filter-tag">Tag</label>
+              <input class="input" id="filter-tag" name="tag" type="text" placeholder="memoria" />
+            </div>
+
+            <div class="filters__actions">
+              <button class="button button--primary" type="submit">Filtrar</button>
+              <button class="button button--ghost" type="button" id="filters-clear">Limpar</button>
+            </div>
+          </form>
+
+          <p class="filters__summary" id="collection-summary" aria-live="polite"></p>
+          <div id="collection-container"></div>
+        </section>
+
+        <!-- ============================= ANO ============================ -->
+        <section class="view" data-view="year" aria-labelledby="year-heading" hidden>
+          <div class="year-toolbar">
+            <div>
+              <h1 class="editor__title" id="year-heading">O ano em artefatos</h1>
+              <p class="year-summary" id="year-summary" aria-live="polite"></p>
+            </div>
+            <div class="year-stepper">
+              <button class="button button--secondary button--sm" type="button" id="year-prev"
+                aria-label="Ano anterior">&larr;</button>
+              <span class="year-stepper__value" id="year-value"></span>
+              <button class="button button--secondary button--sm" type="button" id="year-next"
+                aria-label="Proximo ano">&rarr;</button>
+            </div>
+          </div>
+
+          <div id="year-container"></div>
+
+          <div class="year-legend" id="year-legend" hidden>
+            <span class="year-legend__item">
+              <span class="year-legend__swatch year-legend__swatch--empty"></span>
+              Dia sem registro
+            </span>
+            <span class="year-legend__item" data-type="text">
+              <span class="year-legend__swatch"></span>Texto
+            </span>
+            <span class="year-legend__item" data-type="quote">
+              <span class="year-legend__swatch"></span>Citacao
+            </span>
+            <span class="year-legend__item" data-type="photo">
+              <span class="year-legend__swatch"></span>Foto
+            </span>
+            <span class="year-legend__item" data-type="link">
+              <span class="year-legend__swatch"></span>Link
+            </span>
+            <span class="year-legend__item" data-type="music">
+              <span class="year-legend__swatch"></span>Musica
+            </span>
+          </div>
+        </section>
+
+        <!-- =========================== DETALHE ========================== -->
+        <section class="view" data-view="detail" aria-labelledby="detail-heading" hidden>
+          <div class="detail" id="detail-container">
+            <h1 class="visually-hidden" id="detail-heading">Detalhe do artefato</h1>
+          </div>
+        </section>
+
+        <!-- ============================ EDITOR ========================== -->
+        <section class="view" data-view="editor" aria-labelledby="editor-heading" hidden>
+          <div class="editor">
+            <div class="editor__header">
+              <h1 class="editor__title" id="editor-heading">Registrar um artefato</h1>
+              <p class="editor__subtitle" id="editor-subtitle">
+                Um dia. Um artefato. Escolha o que representa este dia.
+              </p>
+            </div>
+
+            <div class="editor__panel">
+              <form class="form" id="artifact-form" novalidate>
+                <div class="field">
+                  <label class="field__label" for="form-date">Data</label>
+                  <input class="input" id="form-date" name="artifact_date" type="date" required />
+                  <p class="field__hint">Hoje ou qualquer dia passado.</p>
+                  <p class="field__error" id="form-date-error" aria-live="polite"></p>
+                </div>
+
+                <fieldset class="type-picker" id="form-type-picker">
+                  <legend class="type-picker__legend">Tipo</legend>
+                  <div class="type-option">
+                    <input class="type-option__input" type="radio" name="type" id="type-text"
+                      value="text" checked />
+                    <label class="type-option__label" for="type-text">Texto</label>
+                  </div>
+                  <div class="type-option">
+                    <input class="type-option__input" type="radio" name="type" id="type-quote"
+                      value="quote" />
+                    <label class="type-option__label" for="type-quote">Citacao</label>
+                  </div>
+                  <div class="type-option">
+                    <input class="type-option__input" type="radio" name="type" id="type-photo"
+                      value="photo" />
+                    <label class="type-option__label" for="type-photo">Foto</label>
+                  </div>
+                  <div class="type-option">
+                    <input class="type-option__input" type="radio" name="type" id="type-link"
+                      value="link" />
+                    <label class="type-option__label" for="type-link">Link</label>
+                  </div>
+                  <div class="type-option">
+                    <input class="type-option__input" type="radio" name="type" id="type-music"
+                      value="music" />
+                    <label class="type-option__label" for="type-music">Musica</label>
+                  </div>
+                </fieldset>
+
+                <div class="field">
+                  <label class="field__label" for="form-title">Titulo</label>
+                  <input class="input" id="form-title" name="title" type="text" maxlength="120"
+                    placeholder="Opcional" />
+                  <p class="field__error" id="form-title-error" aria-live="polite"></p>
+                </div>
+
+                <div class="field" id="form-url-field" hidden>
+                  <label class="field__label" for="form-url">Endereco</label>
+                  <input class="input" id="form-url" name="url" type="url"
+                    placeholder="https://" />
+                  <p class="field__hint" id="form-url-hint"></p>
+                  <p class="field__error" id="form-url-error" aria-live="polite"></p>
+                </div>
+
+                <div class="field">
+                  <label class="field__label" for="form-content" id="form-content-label">
+                    Conteudo
+                  </label>
+                  <textarea class="textarea" id="form-content" name="content"
+                    placeholder="O que aconteceu hoje?"></textarea>
+                  <p class="field__hint" id="form-content-hint"></p>
+                  <p class="field__error" id="form-content-error" aria-live="polite"></p>
+                </div>
+
+                <div class="field">
+                  <label class="field__label" for="form-tags">Tags</label>
+                  <input class="input" id="form-tags" name="tags" type="text"
+                    placeholder="viagem, familia, memoria" />
+                  <p class="field__hint">Separadas por virgula. Ate 10 tags.</p>
+                  <p class="field__error" id="form-tags-error" aria-live="polite"></p>
+                </div>
+
+                <div class="form__actions">
+                  <a class="button button--ghost" href="#/" id="form-cancel">Cancelar</a>
+                  <button class="button button--accent" type="submit" id="form-submit">
+                    Guardar artefato
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="app-footer">
+        <div class="app-footer__inner">
+          <span>Daily Artifact &mdash; uma colecao visual de memorias.</span>
+          <span id="footer-api"></span>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Pilha de notificacoes. -->
+    <div class="toast-stack" id="toast-stack" role="status" aria-live="polite"></div>
+
+    <!-- ===================== Templates reutilizaveis ===================== -->
+
+    <template id="tpl-card">
+      <button class="card" type="button">
+        <div class="card__header">
+          <span class="card__date" data-slot="date"></span>
+          <span class="type-badge" data-slot="type"></span>
+        </div>
+        <img class="card__thumb" data-slot="thumb" alt="" hidden />
+        <h3 class="card__title" data-slot="title" hidden></h3>
+        <p class="card__excerpt" data-slot="excerpt" hidden></p>
+        <div class="card__footer">
+          <ul class="tag-list" data-slot="tags"></ul>
+        </div>
+      </button>
+    </template>
+
+    <template id="tpl-card-grid">
+      <div class="card-grid" data-slot="grid"></div>
+    </template>
+
+    <template id="tpl-tag">
+      <li><span class="tag" data-slot="tag"></span></li>
+    </template>
+
+    <template id="tpl-tag-button">
+      <li><button class="tag" type="button" data-slot="tag"></button></li>
+    </template>
+
+    <template id="tpl-empty-state">
+      <div class="empty-state">
+        <p class="empty-state__title" data-slot="title"></p>
+        <p class="empty-state__message" data-slot="message"></p>
+        <a class="button button--secondary button--sm" data-slot="action" hidden></a>
+      </div>
+    </template>
+
+    <template id="tpl-loading">
+      <p class="loading" data-slot="loading">Carregando</p>
+    </template>
+
+    <template id="tpl-month">
+      <section class="month">
+        <h3 class="month__name" data-slot="name"></h3>
+        <div class="month__grid" data-slot="grid"></div>
+      </section>
+    </template>
+
+    <template id="tpl-toast">
+      <div class="toast">
+        <div class="toast__body">
+          <p class="toast__title" data-slot="title"></p>
+          <p class="toast__message" data-slot="message" hidden></p>
+        </div>
+        <button class="toast__close" type="button" aria-label="Fechar">&times;</button>
+      </div>
+    </template>
+
+    <template id="tpl-modal">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <button class="modal__backdrop" type="button" aria-label="Fechar"></button>
+        <div class="modal__dialog">
+          <h2 class="modal__title" id="modal-title" data-slot="title"></h2>
+          <p class="modal__message" data-slot="message"></p>
+          <div class="modal__actions">
+            <button class="button button--secondary" type="button" data-slot="cancel"></button>
+            <button class="button button--danger" type="button" data-slot="confirm"></button>
+          </div>
+        </div>
+      </div>
+    </template>
+
+    <template id="tpl-detail">
+      <a class="detail__back" href="#/" data-slot="back">&larr; Voltar</a>
+
+      <div class="detail__header">
+        <span class="detail__date" data-slot="date"></span>
+        <span class="type-badge" data-slot="type"></span>
+      </div>
+
+      <h2 class="detail__title" data-slot="title" hidden></h2>
+
+      <div class="detail__body">
+        <p class="detail__text" data-slot="text" hidden></p>
+        <blockquote class="detail__quote" data-slot="quote" hidden></blockquote>
+        <img class="detail__image" data-slot="image" alt="" hidden />
+        <div class="detail__resource" data-slot="resource" hidden>
+          <span class="detail__resource-url" data-slot="url"></span>
+          <a class="button button--secondary button--sm" data-slot="open" target="_blank"
+            rel="noopener noreferrer">Abrir</a>
+        </div>
+        <p class="detail__caption" data-slot="caption" hidden></p>
+      </div>
+
+      <ul class="tag-list detail__tags" data-slot="tags"></ul>
+
+      <div class="detail__meta">
+        <span data-slot="created"></span>
+        <span data-slot="updated" hidden></span>
+      </div>
+
+      <div class="detail__actions">
+        <a class="button button--secondary" data-slot="edit">Editar</a>
+        <button class="button button--danger-ghost" type="button" data-slot="delete">
+          Excluir
+        </button>
+      </div>
+    </template>
+
+    <!-- =========================== Scripts ============================== -->
+    <!-- Scripts classicos, sem modulos: a pagina precisa abrir via file://. -->
+    <script src="./js/config.js" defer></script>
+    <script src="./js/core/dom.js" defer></script>
+    <script src="./js/core/dates.js" defer></script>
+    <script src="./js/core/errors.js" defer></script>
+    <script src="./js/core/state.js" defer></script>
+    <script src="./js/data/schemas.js" defer></script>
+    <script src="./js/data/api.js" defer></script>
+    <script src="./js/ui/toast.js" defer></script>
+    <script src="./js/ui/modal.js" defer></script>
+    <script src="./js/ui/empty-state.js" defer></script>
+    <script src="./js/ui/artifact-card.js" defer></script>
+    <script src="./js/ui/artifact-detail.js" defer></script>
+    <script src="./js/ui/artifact-form.js" defer></script>
+    <script src="./js/ui/filters.js" defer></script>
+    <script src="./js/calendar.js" defer></script>
+    <script src="./js/router.js" defer></script>
+    <script src="./js/app.js" defer></script>
+  </body>
+</html>

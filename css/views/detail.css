@@ -1,0 +1,147 @@
+/* ==========================================================================
+   View: Detalhe do artefato
+   ========================================================================== */
+
+.detail {
+  max-width: var(--width-narrow);
+  margin: 0 auto;
+}
+
+.detail__back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
+  text-decoration: none;
+}
+
+.detail__back:hover {
+  color: var(--color-ink);
+}
+
+.detail__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-4);
+}
+
+.detail__date {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-ink-muted);
+}
+
+.detail__title {
+  font-size: var(--text-xl);
+  letter-spacing: var(--tracking-tight);
+  margin-bottom: var(--space-5);
+}
+
+/* --- Corpo, variando conforme o tipo ------------------------------------- */
+
+.detail__body {
+  padding: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.detail__text {
+  font-size: var(--text-md);
+  line-height: var(--leading-normal);
+  white-space: pre-wrap;
+}
+
+.detail__quote {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: var(--text-xl);
+  font-style: italic;
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-snug);
+  text-wrap: balance;
+}
+
+.detail__quote::before {
+  content: '\201C';
+  color: var(--color-accent);
+}
+
+.detail__quote::after {
+  content: '\201D';
+  color: var(--color-accent);
+}
+
+.detail__image {
+  width: 100%;
+  max-height: 30rem;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface-sunken);
+}
+
+.detail__caption {
+  margin-top: var(--space-4);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+  color: var(--color-ink-muted);
+  white-space: pre-wrap;
+}
+
+/* Cartao de recurso externo: link e musica. */
+.detail__resource {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface-sunken);
+}
+
+.detail__resource-url {
+  font-size: var(--text-sm);
+  word-break: break-all;
+}
+
+/* --- Rodape -------------------------------------------------------------- */
+
+.detail__tags {
+  margin-top: var(--space-5);
+}
+
+.detail__meta {
+  display: flex;
+  gap: var(--space-5);
+  flex-wrap: wrap;
+  margin-top: var(--space-6);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border);
+  font-size: var(--text-xs);
+  color: var(--color-ink-subtle);
+}
+
+.detail__actions {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-top: var(--space-6);
+}
+
+@media (max-width: 40rem) {
+  .detail__body {
+    padding: var(--space-5);
+  }
+
+  .detail__quote {
+    font-size: var(--text-lg);
+  }
+}
