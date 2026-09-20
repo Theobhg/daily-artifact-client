@@ -10,13 +10,13 @@ window.DA = window.DA || {};
 window.DA.artifactForm = (function () {
   'use strict';
 
-  var dom = window.DA.dom;
-  var dates = window.DA.dates;
-  var schemas = window.DA.schemas;
+  const dom = window.DA.dom;
+  const dates = window.DA.dates;
+  const schemas = window.DA.schemas;
 
-  var FIELDS = ['artifact_date', 'type', 'title', 'content', 'url', 'tags'];
+  const FIELDS = ['artifact_date', 'type', 'title', 'content', 'url', 'tags'];
 
-  var CONTENT_HINTS = {
+  const CONTENT_HINTS = {
     text: 'O que aconteceu hoje?',
     quote: 'A frase que ficou.',
     photo: 'Uma legenda para a foto. Opcional.',
@@ -24,14 +24,14 @@ window.DA.artifactForm = (function () {
     music: 'Um comentario sobre a musica. Opcional.',
   };
 
-  var URL_HINTS = {
+  const URL_HINTS = {
     photo: 'Endereco da imagem.',
     link: 'Endereco da pagina.',
     music: 'Endereco da musica.',
   };
 
-  var elements = {};
-  var onSubmit = null;
+  let elements = {};
+  let onSubmit = null;
 
   function cacheElements() {
     elements = {
@@ -54,12 +54,12 @@ window.DA.artifactForm = (function () {
   }
 
   function selectedType() {
-    var checked = elements.form.querySelector('input[name="type"]:checked');
+    const checked = elements.form.querySelector('input[name="type"]:checked');
     return checked ? checked.value : 'text';
   }
 
   function setSelectedType(type) {
-    var input = elements.form.querySelector('input[name="type"][value="' + type + '"]');
+    const input = elements.form.querySelector('input[name="type"][value="' + type + '"]');
     if (input) {
       input.checked = true;
     }
@@ -67,9 +67,9 @@ window.DA.artifactForm = (function () {
 
   /** Mostra os campos que o tipo escolhido exige. */
   function applyTypeRules() {
-    var type = selectedType();
-    var needsUrl = schemas.requiresUrl(type);
-    var needsContent = schemas.requiresContent(type);
+    const type = selectedType();
+    const needsUrl = schemas.requiresUrl(type);
+    const needsContent = schemas.requiresContent(type);
 
     dom.toggle(elements.urlField, needsUrl);
     elements.urlHint.textContent = URL_HINTS[type] || '';
@@ -92,12 +92,12 @@ window.DA.artifactForm = (function () {
 
   function clearErrors() {
     FIELDS.forEach(function (field) {
-      var target = errorElement(field);
+      const target = errorElement(field);
       if (target) {
         target.textContent = '';
-        var input = inputElement(field);
+        const input = inputElement(field);
         if (input && input.closest) {
-          var wrapper = input.closest('.field');
+          const wrapper = input.closest('.field');
           if (wrapper) {
             wrapper.classList.remove('field--invalid');
           }
@@ -109,18 +109,18 @@ window.DA.artifactForm = (function () {
   /** Exibe os erros junto dos respectivos campos e foca o primeiro deles. */
   function showErrors(errors) {
     clearErrors();
-    var firstInput = null;
+    let firstInput = null;
 
     Object.keys(errors).forEach(function (field) {
-      var target = errorElement(field);
+      const target = errorElement(field);
       if (!target) {
         return;
       }
       target.textContent = errors[field];
 
-      var input = inputElement(field);
+      const input = inputElement(field);
       if (input && input.closest) {
-        var wrapper = input.closest('.field');
+        const wrapper = input.closest('.field');
         if (wrapper) {
           wrapper.classList.add('field--invalid');
         }
@@ -137,7 +137,7 @@ window.DA.artifactForm = (function () {
 
   /** Marca um campo especifico como invalido, a partir da resposta da API. */
   function showFieldError(field, message) {
-    var errors = {};
+    const errors = {};
     errors[field] = message;
     showErrors(errors);
   }
@@ -163,9 +163,9 @@ window.DA.artifactForm = (function () {
    * options: { mode, artifact, defaultDate, onSubmit, cancelHref }
    */
   function open(options) {
-    var settings = options || {};
-    var isEdit = settings.mode === 'edit';
-    var artifact = settings.artifact || null;
+    const settings = options || {};
+    const isEdit = settings.mode === 'edit';
+    const artifact = settings.artifact || null;
 
     clearErrors();
     elements.form.reset();
@@ -203,7 +203,7 @@ window.DA.artifactForm = (function () {
   function handleSubmit(event) {
     event.preventDefault();
 
-    var result = schemas.validateArtifactInput(readValues());
+    const result = schemas.validateArtifactInput(readValues());
     if (!result.ok) {
       showErrors(result.errors);
       return;

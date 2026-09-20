@@ -9,13 +9,13 @@ window.DA = window.DA || {};
 window.DA.filters = (function () {
   'use strict';
 
-  var dom = window.DA.dom;
-  var dates = window.DA.dates;
+  const dom = window.DA.dom;
+  const dates = window.DA.dates;
 
-  var YEAR_RANGE = 6;
+  const YEAR_RANGE = 6;
 
-  var elements = {};
-  var onApply = null;
+  let elements = {};
+  let onApply = null;
 
   function cacheElements() {
     elements = {
@@ -30,16 +30,16 @@ window.DA.filters = (function () {
 
   /** Preenche os selects de ano e mes uma unica vez. */
   function populateOptions() {
-    var currentYear = new Date().getFullYear();
-    for (var year = currentYear; year > currentYear - YEAR_RANGE; year -= 1) {
-      var yearOption = document.createElement('option');
+    const currentYear = new Date().getFullYear();
+    for (let year = currentYear; year > currentYear - YEAR_RANGE; year -= 1) {
+      const yearOption = document.createElement('option');
       yearOption.value = String(year);
       yearOption.textContent = String(year);
       elements.year.appendChild(yearOption);
     }
 
-    for (var month = 0; month < 12; month += 1) {
-      var monthOption = document.createElement('option');
+    for (let month = 0; month < 12; month += 1) {
+      const monthOption = document.createElement('option');
       monthOption.value = String(month + 1);
       monthOption.textContent = dates.monthName(month);
       elements.month.appendChild(monthOption);
@@ -65,7 +65,7 @@ window.DA.filters = (function () {
 
   /** Descreve os filtros ativos para o resumo da listagem. */
   function describe(filters, total) {
-    var parts = [];
+    const parts = [];
     if (filters.type) {
       parts.push('tipo ' + window.DA.schemas.TYPE_LABELS[filters.type].toLowerCase());
     }
@@ -79,7 +79,7 @@ window.DA.filters = (function () {
       parts.push('tag "' + filters.tag + '"');
     }
 
-    var counted = total === 1 ? '1 artefato' : total + ' artefatos';
+    const counted = total === 1 ? '1 artefato' : total + ' artefatos';
     return parts.length === 0 ? counted + '.' : counted + ' em ' + parts.join(', ') + '.';
   }
 

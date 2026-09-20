@@ -22,7 +22,7 @@ window.DA.dom = (function () {
 
   /** Clona o conteudo de um <template> pelo id. */
   function fromTemplate(templateId) {
-    var template = document.getElementById(templateId);
+    const template = document.getElementById(templateId);
     if (!template) {
       throw new Error('Template nao encontrado: ' + templateId);
     }
@@ -39,11 +39,11 @@ window.DA.dom = (function () {
    * Quando o valor e vazio, o elemento e escondido em vez de ficar em branco.
    */
   function fillText(root, name, value) {
-    var element = slot(root, name);
+    const element = slot(root, name);
     if (!element) {
       return null;
     }
-    var text = value === null || value === undefined ? '' : String(value);
+    const text = value === null || value === undefined ? '' : String(value);
     element.textContent = text;
     element.hidden = text === '';
     return element;

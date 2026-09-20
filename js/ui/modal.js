@@ -10,22 +10,22 @@ window.DA = window.DA || {};
 window.DA.modal = (function () {
   'use strict';
 
-  var dom = window.DA.dom;
+  const dom = window.DA.dom;
 
   function confirm(options) {
-    var settings = options || {};
+    const settings = options || {};
 
     return new Promise(function (resolve) {
-      var fragment = dom.fromTemplate('tpl-modal');
-      var element = fragment.querySelector('.modal');
-      var previousFocus = document.activeElement;
+      const fragment = dom.fromTemplate('tpl-modal');
+      const element = fragment.querySelector('.modal');
+      const previousFocus = document.activeElement;
 
       dom.fillText(fragment, 'title', settings.title || 'Confirmar acao');
       dom.fillText(fragment, 'message', settings.message || '');
 
-      var confirmButton = dom.slot(fragment, 'confirm');
-      var cancelButton = dom.slot(fragment, 'cancel');
-      var backdrop = element.querySelector('.modal__backdrop');
+      const confirmButton = dom.slot(fragment, 'confirm');
+      const cancelButton = dom.slot(fragment, 'cancel');
+      const backdrop = element.querySelector('.modal__backdrop');
 
       confirmButton.textContent = settings.confirmLabel || 'Confirmar';
       cancelButton.textContent = settings.cancelLabel || 'Cancelar';
@@ -49,7 +49,7 @@ window.DA.modal = (function () {
         // Mantem o foco preso entre os dois botoes do dialogo.
         if (event.key === 'Tab') {
           event.preventDefault();
-          var active = document.activeElement;
+          const active = document.activeElement;
           (active === confirmButton ? cancelButton : confirmButton).focus();
         }
       }

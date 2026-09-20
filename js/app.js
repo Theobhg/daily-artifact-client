@@ -8,22 +8,22 @@
 (function () {
   'use strict';
 
-  var dom = window.DA.dom;
-  var dates = window.DA.dates;
-  var state = window.DA.state;
-  var api = window.DA.api;
-  var errors = window.DA.errors;
-  var toast = window.DA.toast;
-  var modal = window.DA.modal;
-  var router = window.DA.router;
-  var calendar = window.DA.calendar;
-  var emptyState = window.DA.emptyState;
-  var artifactCard = window.DA.artifactCard;
-  var artifactDetail = window.DA.artifactDetail;
-  var artifactForm = window.DA.artifactForm;
-  var filters = window.DA.filters;
+  const dom = window.DA.dom;
+  const dates = window.DA.dates;
+  const state = window.DA.state;
+  const api = window.DA.api;
+  const errors = window.DA.errors;
+  const toast = window.DA.toast;
+  const modal = window.DA.modal;
+  const router = window.DA.router;
+  const calendar = window.DA.calendar;
+  const emptyState = window.DA.emptyState;
+  const artifactCard = window.DA.artifactCard;
+  const artifactDetail = window.DA.artifactDetail;
+  const artifactForm = window.DA.artifactForm;
+  const filters = window.DA.filters;
 
-  var RECENT_LIMIT = 6;
+  const RECENT_LIMIT = 6;
 
   // ------------------------------------------------------------------
   // Conexao com a API
@@ -64,7 +64,7 @@
    * entao nenhum dos dois estados e exibido e o aviso de conexao explica.
    */
   function renderToday(artifact, unknown) {
-    var today = dates.todayISO();
+    const today = dates.todayISO();
 
     dom.qs('#today-weekday').textContent = dates.weekdayName(today);
     dom.qs('#today-date').textContent = dates.formatDayMonth(today);
@@ -76,18 +76,18 @@
       return;
     }
 
-    var badge = dom.qs('#today-type');
+    const badge = dom.qs('#today-type');
     badge.textContent = artifactCard.typeLabel(artifact.type);
     badge.setAttribute('data-type', artifact.type);
 
-    var title = dom.qs('#today-title');
+    const title = dom.qs('#today-title');
     title.textContent = artifact.title || artifactCard.typeLabel(artifact.type) + ' de hoje';
 
-    var body = dom.qs('#today-body');
+    const body = dom.qs('#today-body');
     body.textContent = artifact.content || artifact.url || '';
     body.hidden = body.textContent === '';
 
-    var image = dom.qs('#today-image');
+    const image = dom.qs('#today-image');
     if (artifact.type === 'photo' && artifact.url) {
       image.setAttribute('src', artifact.url);
       image.setAttribute('alt', artifact.title || 'Foto de hoje');
@@ -113,14 +113,14 @@
           renderToday(null);
           return;
         }
-        var offline = handleError(error);
+        const offline = handleError(error);
         renderToday(null, offline);
       }
     );
   }
 
   function loadRecent() {
-    var container = dom.qs('#recent-container');
+    const container = dom.qs('#recent-container');
     dom.replace(container, emptyState.loading());
 
     return api.listArtifacts().then(
@@ -163,9 +163,9 @@
   // ------------------------------------------------------------------
 
   function loadCollection() {
-    var container = dom.qs('#collection-container');
-    var summary = dom.qs('#collection-summary');
-    var active = state.get('filters');
+    const container = dom.qs('#collection-container');
+    const summary = dom.qs('#collection-summary');
+    const active = state.get('filters');
 
     dom.replace(container, emptyState.loading());
     summary.textContent = '';
@@ -218,9 +218,9 @@
   // ------------------------------------------------------------------
 
   function loadYear() {
-    var container = dom.qs('#year-container');
-    var legend = dom.qs('#year-legend');
-    var year = state.get('selectedYear');
+    const container = dom.qs('#year-container');
+    const legend = dom.qs('#year-legend');
+    const year = state.get('selectedYear');
 
     dom.qs('#year-value').textContent = String(year);
     dom.replace(container, emptyState.loading());
@@ -294,7 +294,7 @@
   function showDetail(params) {
     router.showView('detail');
 
-    var container = dom.qs('#detail-container');
+    const container = dom.qs('#detail-container');
     dom.replace(container, emptyState.loading());
 
     api.getArtifact(params.id).then(

@@ -9,8 +9,8 @@ window.DA = window.DA || {};
 window.DA.toast = (function () {
   'use strict';
 
-  var dom = window.DA.dom;
-  var DEFAULT_DURATION = 4500;
+  const dom = window.DA.dom;
+  const DEFAULT_DURATION = 4500;
 
   function stack() {
     return document.getElementById('toast-stack');
@@ -29,13 +29,13 @@ window.DA.toast = (function () {
   }
 
   function show(variant, title, message, duration) {
-    var container = stack();
+    const container = stack();
     if (!container) {
       return;
     }
 
-    var fragment = dom.fromTemplate('tpl-toast');
-    var element = fragment.querySelector('.toast');
+    const fragment = dom.fromTemplate('tpl-toast');
+    const element = fragment.querySelector('.toast');
     element.classList.add('toast--' + variant);
 
     dom.fillText(fragment, 'title', title);

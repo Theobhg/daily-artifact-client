@@ -10,7 +10,7 @@ window.DA = window.DA || {};
 window.DA.state = (function () {
   'use strict';
 
-  var state = {
+  const state = {
     currentView: null,
     currentArtifact: null,
     artifacts: [],
@@ -45,7 +45,7 @@ window.DA.state = (function () {
 
   /** Indica se ha ao menos um filtro ativo. */
   function hasActiveFilters() {
-    var filters = state.filters;
+    const filters = state.filters;
     return Boolean(filters.type || filters.year || filters.month || filters.tag);
   }
 

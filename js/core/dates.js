@@ -11,22 +11,22 @@ window.DA = window.DA || {};
 window.DA.dates = (function () {
   'use strict';
 
-  var WEEKDAYS = [
+  const WEEKDAYS = [
     'Domingo', 'Segunda-feira', 'Terca-feira', 'Quarta-feira',
     'Quinta-feira', 'Sexta-feira', 'Sabado',
   ];
 
-  var MONTHS = [
+  const MONTHS = [
     'Janeiro', 'Fevereiro', 'Marco', 'Abril', 'Maio', 'Junho',
     'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro',
   ];
 
-  var MONTHS_SHORT = [
+  const MONTHS_SHORT = [
     'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
     'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez',
   ];
 
-  var ISO_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+  const ISO_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
   function pad(value) {
     return String(value).padStart(2, '0');
@@ -39,7 +39,7 @@ window.DA.dates = (function () {
 
   /** Converte uma string ISO em um Date local, sem deslocamento de fuso. */
   function parseISO(iso) {
-    var parts = String(iso).split('-');
+    const parts = String(iso).split('-');
     return new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
   }
 
@@ -53,7 +53,7 @@ window.DA.dates = (function () {
     if (!ISO_PATTERN.test(String(iso || ''))) {
       return false;
     }
-    var date = parseISO(iso);
+    const date = parseISO(iso);
     return !isNaN(date.getTime()) && toISO(date) === iso;
   }
 
@@ -69,7 +69,7 @@ window.DA.dates = (function () {
 
   /** "20 de setembro" */
   function formatDayMonth(iso) {
-    var date = parseISO(iso);
+    const date = parseISO(iso);
     return date.getDate() + ' de ' + MONTHS[date.getMonth()].toLowerCase();
   }
 
@@ -80,7 +80,7 @@ window.DA.dates = (function () {
 
   /** "20 set 2026" */
   function formatShort(iso) {
-    var date = parseISO(iso);
+    const date = parseISO(iso);
     return date.getDate() + ' ' + MONTHS_SHORT[date.getMonth()].toLowerCase() + ' ' +
       date.getFullYear();
   }
@@ -90,7 +90,7 @@ window.DA.dates = (function () {
     if (!value) {
       return '';
     }
-    var date = new Date(value);
+    const date = new Date(value);
     if (isNaN(date.getTime())) {
       return '';
     }

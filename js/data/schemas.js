@@ -13,15 +13,15 @@ window.DA = window.DA || {};
 window.DA.schemas = (function () {
   'use strict';
 
-  var dates = window.DA.dates;
+  const dates = window.DA.dates;
 
-  var TYPES = ['text', 'quote', 'photo', 'link', 'music'];
-  var TEXTUAL_TYPES = ['text', 'quote'];
-  var LINKED_TYPES = ['photo', 'link', 'music'];
-  var MAX_TAGS = 10;
-  var MAX_TITLE = 120;
+  const TYPES = ['text', 'quote', 'photo', 'link', 'music'];
+  const TEXTUAL_TYPES = ['text', 'quote'];
+  const LINKED_TYPES = ['photo', 'link', 'music'];
+  const MAX_TAGS = 10;
+  const MAX_TITLE = 120;
 
-  var TYPE_LABELS = {
+  const TYPE_LABELS = {
     text: 'Texto',
     quote: 'Citacao',
     photo: 'Foto',
@@ -59,7 +59,7 @@ window.DA.schemas = (function () {
       return false;
     }
     try {
-      var parsed = new URL(value.trim());
+      const parsed = new URL(value.trim());
       return parsed.protocol === 'http:' || parsed.protocol === 'https:';
     } catch (error) {
       return false;
@@ -71,9 +71,9 @@ window.DA.schemas = (function () {
     if (isBlank(value)) {
       return [];
     }
-    var seen = [];
+    const seen = [];
     value.split(',').forEach(function (raw) {
-      var tag = raw.trim().toLowerCase();
+      const tag = raw.trim().toLowerCase();
       if (tag !== '' && seen.indexOf(tag) === -1) {
         seen.push(tag);
       }
@@ -86,7 +86,7 @@ window.DA.schemas = (function () {
    * Espelha as regras do backend para que o erro apareca antes da viagem.
    */
   function validateArtifactInput(input) {
-    var errors = {};
+    const errors = {};
 
     if (isBlank(input.artifact_date)) {
       errors.artifact_date = 'Informe a data do artefato.';
@@ -147,7 +147,7 @@ window.DA.schemas = (function () {
 
   /** Valida um artefato vindo da API. */
   function validateArtifact(value) {
-    var issues = [];
+    const issues = [];
 
     if (value === null || typeof value !== 'object' || Array.isArray(value)) {
       return fail({ _: 'Resposta invalida: era esperado um artefato.' });
@@ -176,8 +176,8 @@ window.DA.schemas = (function () {
     if (!Array.isArray(value)) {
       return fail({ _: 'Resposta invalida: era esperada uma lista de artefatos.' });
     }
-    for (var i = 0; i < value.length; i += 1) {
-      var result = validateArtifact(value[i]);
+    for (let i = 0; i < value.length; i += 1) {
+      const result = validateArtifact(value[i]);
       if (!result.ok) {
         return result;
       }

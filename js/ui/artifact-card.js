@@ -6,11 +6,11 @@ window.DA = window.DA || {};
 window.DA.artifactCard = (function () {
   'use strict';
 
-  var dom = window.DA.dom;
-  var dates = window.DA.dates;
-  var schemas = window.DA.schemas;
+  const dom = window.DA.dom;
+  const dates = window.DA.dates;
+  const schemas = window.DA.schemas;
 
-  var EXCERPT_LIMIT = 160;
+  const EXCERPT_LIMIT = 160;
 
   function typeLabel(type) {
     return schemas.TYPE_LABELS[type] || type;
@@ -34,8 +34,8 @@ window.DA.artifactCard = (function () {
   function renderTags(container, tags, onTagClick) {
     dom.clear(container);
     (tags || []).forEach(function (name) {
-      var fragment = dom.fromTemplate(onTagClick ? 'tpl-tag-button' : 'tpl-tag');
-      var element = dom.slot(fragment, 'tag');
+      const fragment = dom.fromTemplate(onTagClick ? 'tpl-tag-button' : 'tpl-tag');
+      const element = dom.slot(fragment, 'tag');
       element.textContent = name;
       if (onTagClick) {
         element.addEventListener('click', function (event) {
@@ -49,8 +49,8 @@ window.DA.artifactCard = (function () {
 
   /** Monta um card. onSelect recebe o artefato clicado. */
   function create(artifact, onSelect) {
-    var fragment = dom.fromTemplate('tpl-card');
-    var card = fragment.querySelector('.card');
+    const fragment = dom.fromTemplate('tpl-card');
+    const card = fragment.querySelector('.card');
 
     card.setAttribute('data-type', artifact.type);
     card.classList.add('card--' + artifact.type);
@@ -65,7 +65,7 @@ window.DA.artifactCard = (function () {
     dom.fillText(fragment, 'excerpt', excerptFor(artifact));
 
     if (artifact.type === 'photo' && artifact.url) {
-      var thumb = dom.slot(fragment, 'thumb');
+      const thumb = dom.slot(fragment, 'thumb');
       thumb.setAttribute('src', artifact.url);
       thumb.setAttribute('alt', artifact.title || 'Foto de ' +
         dates.formatLong(artifact.artifact_date));
@@ -87,8 +87,8 @@ window.DA.artifactCard = (function () {
 
   /** Monta a grade com todos os cards. */
   function createGrid(artifacts, onSelect) {
-    var fragment = dom.fromTemplate('tpl-card-grid');
-    var grid = dom.slot(fragment, 'grid');
+    const fragment = dom.fromTemplate('tpl-card-grid');
+    const grid = dom.slot(fragment, 'grid');
     artifacts.forEach(function (artifact) {
       grid.appendChild(create(artifact, onSelect));
     });

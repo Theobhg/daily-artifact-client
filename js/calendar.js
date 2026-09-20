@@ -11,13 +11,13 @@ window.DA = window.DA || {};
 window.DA.calendar = (function () {
   'use strict';
 
-  var dom = window.DA.dom;
-  var dates = window.DA.dates;
-  var schemas = window.DA.schemas;
+  const dom = window.DA.dom;
+  const dates = window.DA.dates;
+  const schemas = window.DA.schemas;
 
   /** Indexa os artefatos do ano por data, para consulta direta ao desenhar. */
   function indexByDate(artifacts) {
-    var index = {};
+    const index = {};
     artifacts.forEach(function (artifact) {
       index[artifact.artifact_date] = artifact;
     });
@@ -26,7 +26,7 @@ window.DA.calendar = (function () {
 
   /** Celula vazia usada para alinhar o primeiro dia ao dia da semana certo. */
   function createPlaceholder() {
-    var cell = document.createElement('span');
+    const cell = document.createElement('span');
     cell.className = 'day day--placeholder';
     cell.setAttribute('aria-hidden', 'true');
     return cell;
@@ -34,8 +34,8 @@ window.DA.calendar = (function () {
 
   /** Celula de um dia: botao quando ha artefato, marcador estatico quando nao. */
   function createDay(iso, day, artifact, today, onSelect) {
-    var isFilled = Boolean(artifact);
-    var cell = document.createElement(isFilled ? 'button' : 'span');
+    const isFilled = Boolean(artifact);
+    const cell = document.createElement(isFilled ? 'button' : 'span');
 
     cell.className = 'day' + (isFilled ? ' day--filled' : '');
     cell.textContent = String(day);
@@ -63,19 +63,19 @@ window.DA.calendar = (function () {
 
   /** Desenha um mes completo. */
   function createMonth(year, monthIndex, index, today, onSelect) {
-    var fragment = dom.fromTemplate('tpl-month');
-    var grid = dom.slot(fragment, 'grid');
+    const fragment = dom.fromTemplate('tpl-month');
+    const grid = dom.slot(fragment, 'grid');
 
     dom.slot(fragment, 'name').textContent = dates.monthName(monthIndex);
 
-    var offset = dates.firstWeekdayOfMonth(year, monthIndex);
-    for (var i = 0; i < offset; i += 1) {
+    const offset = dates.firstWeekdayOfMonth(year, monthIndex);
+    for (let i = 0; i < offset; i += 1) {
       grid.appendChild(createPlaceholder());
     }
 
-    var total = dates.daysInMonth(year, monthIndex);
-    for (var day = 1; day <= total; day += 1) {
-      var iso = dates.buildISO(year, monthIndex, day);
+    const total = dates.daysInMonth(year, monthIndex);
+    for (let day = 1; day <= total; day += 1) {
+      const iso = dates.buildISO(year, monthIndex, day);
       grid.appendChild(createDay(iso, day, index[iso], today, onSelect));
     }
 
@@ -87,12 +87,12 @@ window.DA.calendar = (function () {
    * onSelect recebe (isoDate, artifact) ao clicar em um dia preenchido.
    */
   function render(year, artifacts, onSelect) {
-    var index = indexByDate(artifacts);
-    var today = dates.todayISO();
-    var grid = document.createElement('div');
+    const index = indexByDate(artifacts);
+    const today = dates.todayISO();
+    const grid = document.createElement('div');
     grid.className = 'year-grid';
 
-    for (var month = 0; month < 12; month += 1) {
+    for (let month = 0; month < 12; month += 1) {
       grid.appendChild(createMonth(year, month, index, today, onSelect));
     }
 

@@ -10,21 +10,21 @@ window.DA = window.DA || {};
 window.DA.api = (function () {
   'use strict';
 
-  var errors = window.DA.errors;
-  var schemas = window.DA.schemas;
+  const errors = window.DA.errors;
+  const schemas = window.DA.schemas;
 
-  var config = window.DailyArtifactConfig || {};
-  var BASE_URL = String(config.API_BASE_URL || 'http://127.0.0.1:8000').replace(/\/+$/, '');
+  const config = window.DailyArtifactConfig || {};
+  const BASE_URL = String(config.API_BASE_URL || 'http://127.0.0.1:8000').replace(/\/+$/, '');
 
   /** Monta a URL completa, anexando apenas os parametros preenchidos. */
   function buildUrl(path, params) {
-    var url = BASE_URL + path;
+    const url = BASE_URL + path;
     if (!params) {
       return url;
     }
-    var query = [];
+    const query = [];
     Object.keys(params).forEach(function (key) {
-      var value = params[key];
+      const value = params[key];
       if (value !== null && value !== undefined && value !== '') {
         query.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
       }
@@ -41,7 +41,7 @@ window.DA.api = (function () {
       return payload.detail;
     }
     if (Array.isArray(payload.detail)) {
-      var messages = payload.detail
+      const messages = payload.detail
         .map(function (issue) {
           return issue && issue.msg ? String(issue.msg).replace(/^Value error,\s*/, '') : null;
         })
@@ -58,8 +58,8 @@ window.DA.api = (function () {
    * Falhas de rede viram NetworkError; status de erro viram ApiError.
    */
   function request(method, path, options) {
-    var settings = options || {};
-    var init = { method: method, headers: {} };
+    const settings = options || {};
+    const init = { method: method, headers: {} };
 
     if (settings.body !== undefined) {
       init.headers['Content-Type'] = 'application/json';
@@ -96,7 +96,7 @@ window.DA.api = (function () {
   /** Aplica um validador a resposta, transformando desvios em ValidationError. */
   function validated(promise, validate) {
     return promise.then(function (payload) {
-      var result = validate(payload);
+      const result = validate(payload);
       if (!result.ok) {
         throw new errors.ValidationError(result.errors._, result.errors.issues);
       }

@@ -18,14 +18,14 @@ window.DA = window.DA || {};
 window.DA.router = (function () {
   'use strict';
 
-  var dom = window.DA.dom;
+  const dom = window.DA.dom;
 
-  var routes = [];
-  var notFoundHandler = null;
+  const routes = [];
+  let notFoundHandler = null;
 
   /** Converte "#/artefato/12" em ['artefato', '12']. */
   function currentSegments() {
-    var hash = window.location.hash.replace(/^#\/?/, '');
+    const hash = window.location.hash.replace(/^#\/?/, '');
     if (hash === '') {
       return [];
     }
@@ -63,17 +63,17 @@ window.DA.router = (function () {
   }
 
   function match(segments) {
-    for (var i = 0; i < routes.length; i += 1) {
-      var route = routes[i];
+    for (let i = 0; i < routes.length; i += 1) {
+      const route = routes[i];
       if (route.pattern.length !== segments.length) {
         continue;
       }
 
-      var params = {};
-      var matched = true;
+      const params = {};
+      let matched = true;
 
-      for (var j = 0; j < route.pattern.length; j += 1) {
-        var part = route.pattern[j];
+      for (let j = 0; j < route.pattern.length; j += 1) {
+        const part = route.pattern[j];
         if (part.charAt(0) === ':') {
           params[part.slice(1)] = decodeURIComponent(segments[j]);
         } else if (part !== segments[j]) {
@@ -90,7 +90,7 @@ window.DA.router = (function () {
   }
 
   function resolve() {
-    var found = match(currentSegments());
+    const found = match(currentSegments());
     if (found) {
       found.handler(found.params);
       return;
@@ -102,7 +102,7 @@ window.DA.router = (function () {
 
   /** Navega para uma rota. */
   function go(path) {
-    var target = path.charAt(0) === '#' ? path : '#' + path;
+    const target = path.charAt(0) === '#' ? path : '#' + path;
     if (window.location.hash === target) {
       resolve();
       return;

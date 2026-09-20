@@ -28,22 +28,45 @@
   animation: toast-in var(--duration-base) var(--ease);
 }
 
-.toast::before {
-  content: '';
+/* Ponto indicador: a cor comunica o tipo, o pulso chama a atencao sem ruido. */
+.toast__dot {
+  position: relative;
   flex-shrink: 0;
-  width: 6px;
-  align-self: stretch;
-  margin: calc(var(--space-1) * -1) 0;
-  border-radius: var(--radius-pill);
+  width: 8px;
+  height: 8px;
+  margin-top: 0.4em;
+  border-radius: 50%;
   background-color: var(--color-ink-subtle);
 }
 
-.toast--success::before {
+/* Anel que expande e some, herdando a cor do ponto. */
+.toast__dot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background-color: inherit;
+  animation: toast-pulse 1.8s var(--ease) infinite;
+}
+
+.toast--success .toast__dot {
   background-color: var(--color-success);
 }
 
-.toast--error::before {
+.toast--error .toast__dot {
   background-color: var(--color-danger);
+}
+
+@keyframes toast-pulse {
+  0% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(2.8);
+  }
 }
 
 .toast__body {
