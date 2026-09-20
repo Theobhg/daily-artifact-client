@@ -16,7 +16,7 @@
 
     <!-- Pinta o fundo antes do Tailwind compilar, evitando um flash branco. -->
     <style>
-      html { background-color: #f7f5f1; }
+      html { background-color: #f7f3eb; }
     </style>
 
     <!--
@@ -29,24 +29,29 @@
         theme: {
           extend: {
             colors: {
-              canvas: '#f7f5f1',
-              surface: { DEFAULT: '#fffefb', sunken: '#f1eee8', hover: '#f4f1ea' },
-              ink: { DEFAULT: '#1a1815', muted: '#6d675d', subtle: '#9a938a' },
-              hairline: { DEFAULT: '#e5e0d6', strong: '#d4cdc0' },
+              // Paleta terrosa: nenhum preto ou cinza neutro. O texto principal
+              // e um marrom de cafe, e os cinzas viraram tons de terra.
+              canvas: '#f7f3eb',
+              surface: { DEFAULT: '#fffdf8', sunken: '#f0eadf', hover: '#f2ece1' },
+              ink: { DEFAULT: '#3a2a1e', muted: '#6b5443', subtle: '#9a8874' },
+              hairline: { DEFAULT: '#e5daca', strong: '#d3c4ae' },
               accent: {
-                DEFAULT: '#b4562f',
-                hover: '#9a4623',
+                DEFAULT: '#ae5129',
+                hover: '#96431f',
                 soft: '#f3e3d9',
                 ink: '#7d3a1f',
               },
-              danger: { DEFAULT: '#a33329', soft: '#f8e5e2', hover: '#8c2b22' },
-              success: { DEFAULT: '#4a6b46', soft: '#e6ede3' },
+              danger: { DEFAULT: '#9c3b2c', soft: '#f7e5df', hover: '#863125' },
+              // Verde musgo, dentro da mesma premissa terrosa.
+              success: { DEFAULT: '#5e7048', soft: '#e9eddf' },
+              // Cinco famiias terrosas distintas, para os tipos continuarem
+              // diferenciaveis no mosaico do ano.
               artifact: {
-                text: '#6d675d',
-                quote: '#8a5a3c',
-                photo: '#4a6b6b',
-                link: '#4a5a7d',
-                music: '#7d4a6b',
+                text: '#6b5b4e',
+                quote: '#a05a30',
+                photo: '#5e6b45',
+                link: '#8a6e3a',
+                music: '#7d4550',
               },
             },
             fontFamily: {
@@ -56,9 +61,9 @@
             },
             borderRadius: { card: '16px', panel: '24px' },
             boxShadow: {
-              subtle: '0 1px 2px rgba(26, 24, 21, 0.04)',
-              soft: '0 1px 2px rgba(26, 24, 21, 0.04), 0 4px 12px rgba(26, 24, 21, 0.05)',
-              lifted: '0 2px 4px rgba(26, 24, 21, 0.04), 0 12px 32px rgba(26, 24, 21, 0.08)',
+              subtle: '0 1px 2px rgba(58, 42, 30, 0.05)',
+              soft: '0 1px 2px rgba(58, 42, 30, 0.05), 0 4px 12px rgba(58, 42, 30, 0.06)',
+              lifted: '0 2px 4px rgba(58, 42, 30, 0.05), 0 12px 32px rgba(58, 42, 30, 0.09)',
             },
             maxWidth: { content: '68rem', narrow: '40rem' },
             keyframes: {
@@ -141,7 +146,7 @@
                  disabled:cursor-not-allowed disabled:opacity-50 disabled:translate-y-0;
         }
         .button--primary {
-          @apply bg-ink text-surface shadow-subtle hover:bg-[#2e2a25] hover:shadow-soft;
+          @apply bg-ink text-surface shadow-subtle hover:bg-[#4e3928] hover:shadow-soft;
         }
         .button--accent {
           @apply bg-accent text-white shadow-subtle hover:bg-accent-hover hover:shadow-soft;
@@ -190,7 +195,7 @@
         }
         .select {
           @apply cursor-pointer appearance-none pr-12 bg-no-repeat;
-          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' stroke='%236d675d' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' stroke='%236b5443' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
           background-position: right 1rem center;
         }
         /* Estado ligado pelo JS quando a API ou a validacao recusa um campo. */
@@ -250,7 +255,7 @@
         }
         .type-badge {
           @apply inline-flex items-center gap-2 text-xs font-medium uppercase tracking-widest;
-          color: var(--type-color, #6d675d);
+          color: var(--type-color, #6b5443);
         }
         .type-badge::before {
           content: '';
@@ -313,7 +318,7 @@
         .modal__backdrop {
           @apply absolute inset-0 animate-modal-fade cursor-pointer border-0 p-0
                  backdrop-blur-[2px];
-          background-color: rgba(26, 24, 21, 0.28);
+          background-color: rgba(58, 42, 30, 0.30);
         }
         .modal__dialog {
           @apply relative w-full max-w-md animate-modal-rise rounded-card border
@@ -338,7 +343,7 @@
         .day--filled {
           @apply cursor-pointer font-medium text-white transition-transform
                  hover:scale-[1.18] hover:shadow-soft;
-          background-color: var(--type-color, #b4562f);
+          background-color: var(--type-color, #ae5129);
         }
         .day--today {
           @apply outline outline-2 outline-offset-1 outline-ink;
@@ -346,11 +351,11 @@
       }
 
       /* Cor por tipo de artefato, consumida por .type-badge e .day--filled. */
-      [data-type='text'] { --type-color: #6d675d; }
-      [data-type='quote'] { --type-color: #8a5a3c; }
-      [data-type='photo'] { --type-color: #4a6b6b; }
-      [data-type='link'] { --type-color: #4a5a7d; }
-      [data-type='music'] { --type-color: #7d4a6b; }
+      [data-type='text'] { --type-color: #6b5b4e; }
+      [data-type='quote'] { --type-color: #a05a30; }
+      [data-type='photo'] { --type-color: #5e6b45; }
+      [data-type='link'] { --type-color: #8a6e3a; }
+      [data-type='music'] { --type-color: #7d4550; }
 
       /* Reticencias animadas do indicador de carregamento. */
       .loading::after {

@@ -297,10 +297,21 @@ nenhum fluxo, e a exclusão passa por um modal com foco controlado, no lugar de
 ## Identidade visual
 
 A referência estética é o [clay.com](https://www.clay.com/): fundo creme
-quente em vez de branco puro, tinta quase preta, bordas *hairline*, raios
-generosos, sombras de baixa opacidade em camadas e títulos grandes com
-*tracking* negativo. O acento é um terracota, que conversa com a ideia de
-material guardado.
+quente em vez de branco puro, bordas *hairline*, raios generosos, sombras de
+baixa opacidade em camadas e títulos grandes com *tracking* negativo.
+
+A paleta é inteiramente **terrosa — não há preto nem cinza neutro**. O texto
+principal é um marrom de café (`#3a2a1e`), os tons de apoio são marrons
+dessaturados e o acento é um terracota, que conversa com a ideia de material
+guardado. Até as sombras são tingidas de marrom em vez de preto.
+
+Os cinco tipos de artefato recebem cinco famílias terrosas distintas — taupe,
+terracota, musgo, ocre e vinho — para continuarem diferenciáveis no mosaico do
+ano sem quebrar a unidade da paleta.
+
+Todas as combinações de texto e fundo foram verificadas contra o mínimo de
+contraste 4.5:1 da WCAG AA, incluindo o número branco sobre cada cor de dia
+preenchido do calendário.
 
 Todos os valores vivem no bloco `tailwind.config`, no topo do `index.html`.
 Mudar a identidade visual do projeto começa — e quase sempre termina — ali.
