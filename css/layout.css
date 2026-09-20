@@ -186,8 +186,8 @@
 
   .app-nav {
     width: 100%;
-    overflow-x: auto;
-    padding-bottom: var(--space-1);
+    flex-wrap: wrap;
+    gap: var(--space-2);
   }
 
   .app-main {
