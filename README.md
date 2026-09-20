@@ -15,24 +15,41 @@ Este repositório contém apenas o frontend. A API vive em
 ## Tecnologias
 
 - **HTML5** semântico, com `<template>` para as estruturas repetidas
-- **CSS3** puro: custom properties, Grid, Flexbox e media queries
-- **JavaScript Vanilla** (ES5+), em scripts clássicos
+- **Tailwind CSS** via Play CDN, com tema próprio
+- **JavaScript Vanilla** (ES6), em scripts clássicos
 
-Sem framework, sem bundler, sem TypeScript, sem npm, sem CDN e sem nenhuma
-dependência de internet em runtime.
+Sem bundler, sem TypeScript, sem npm e sem build.
+
+> ### ⚠️ A aplicação precisa de internet
+>
+> O Tailwind é carregado pelo **Play CDN** (`cdn.tailwindcss.com`), que compila
+> o CSS dentro do próprio navegador. Isso significa que:
+>
+> - **é necessário estar online** para a interface renderizar com estilo;
+> - o CSS é gerado em tempo de execução, então existe um instante mínimo antes
+>   de a página ficar estilizada;
+> - o próprio Tailwind exibe no console um aviso de que o Play CDN não é
+>   destinado a produção.
+>
+> Esta é a **única** dependência externa do projeto. Todo o resto — HTML,
+> JavaScript e configuração — está versionado e funciona localmente.
 
 ---
 
 ## Como executar
 
-Com a API rodando em `http://127.0.0.1:8000`, **abra `index.html` diretamente
-no navegador** — duplo clique no arquivo já basta.
+Com a API rodando em `http://127.0.0.1:8000` e **com acesso à internet**,
+**abra `index.html` diretamente no navegador** — duplo clique no arquivo já
+basta.
 
 ```
 Não existe npm install.
 Não existe build.
 Não existe servidor frontend.
 ```
+
+Sem internet a aplicação continua funcionando, mas aparece sem estilo algum:
+o Tailwind não consegue ser carregado do CDN.
 
 A URL ficará parecida com:
 
@@ -128,7 +145,7 @@ Todas as sete rotas da API são usadas por uma funcionalidade real da interface.
 ## Arquitetura
 
 ```
-index.html   → marcação semântica e <template> das estruturas repetidas
+index.html   → tema Tailwind, camada de componentes, marcação e <template>
 config.js    → configuração de runtime
 core/        → utilitários sem conhecimento do produto
 data/        → comunicação com a API e validação
@@ -137,6 +154,36 @@ calendar.js  → mosaico anual
 router.js    → navegação entre views
 app.js       → bootstrap e ligação entre os módulos
 ```
+
+### Tailwind e organização dos estilos
+
+Os estilos vivem em dois blocos no topo do `index.html`:
+
+1. **`tailwind.config`** — o tema do projeto: paleta, fontes, raios, sombras e
+   animações. É o equivalente ao antigo arquivo de tokens.
+2. **`<style type="text/tailwindcss">`** — a camada de componentes, escrita com
+   `@apply`.
+
+O restante do layout usa utilitários do Tailwind direto na marcação.
+
+**Por que os estilos não estão em arquivos separados?** Porque o Play CDN só
+processa blocos `<style type="text/tailwindcss">` presentes no documento. Ele
+não lê arquivos `.css` externos, e a aplicação não pode usar `fetch` para
+carregá-los, já que sob `file://` isso é bloqueado pelo navegador. Com um build
+de Tailwind (CLI ou PostCSS), a camada de componentes poderia voltar a viver em
+arquivos próprios.
+
+**Por que a camada de componentes existe?** Porque o JavaScript liga e desliga
+classes de estado — `toast--success`, `day--filled`, `field--invalid`,
+`card--quote`. Essas classes precisam existir de forma estável e previsível, o
+que `@apply` garante. A alternativa seria espalhar listas de utilitários pelo
+JavaScript, tornando-o responsável por aparência.
+
+> **Atenção ao atributo `hidden`.** A aplicação usa `hidden` o tempo todo para
+> alternar views, campos e estados. Como um utilitário de display (`flex`,
+> `grid`) tem precedência sobre o `display: none` do navegador, a camada base
+> declara `[hidden] { display: none !important; }`. Sem essa regra, elementos
+> marcados como ocultos continuam aparecendo.
 
 ### Como a interface é montada
 
@@ -167,26 +214,7 @@ origens de arquivo. Os scripts são carregados na ordem de dependência com
 
 ```
 client/
-├── index.html
-│
-├── css/
-│   ├── tokens.css              # cor, espaço, tipografia, raio, sombra
-│   ├── base.css                # reset e tipografia
-│   ├── layout.css              # shell, cabeçalho, navegação, responsividade
-│   ├── components/
-│   │   ├── buttons.css
-│   │   ├── forms.css
-│   │   ├── cards.css
-│   │   ├── tags.css
-│   │   ├── modal.css
-│   │   ├── toast.css
-│   │   └── empty-state.css
-│   └── views/
-│       ├── home.css
-│       ├── year.css
-│       ├── collection.css
-│       ├── detail.css
-│       └── editor.css
+├── index.html                  # tema Tailwind + componentes + marcação
 │
 ├── js/
 │   ├── config.js               # window.DailyArtifactConfig
@@ -233,15 +261,13 @@ apenas interpreta o `409 Conflict` e mostra a mensagem certa junto ao campo.
 ### Sobre o Zod
 
 **O Zod não foi utilizado.** A biblioteca é distribuída para consumo via npm,
-bundler ou ES Modules, e qualquer um desses caminhos quebraria o requisito
-central do projeto: abrir `index.html` diretamente, sem instalação nem build.
-Carregá-la por CDN também está fora de questão, já que a aplicação não pode
-depender de internet.
+bundler ou ES Modules, e qualquer um desses caminhos quebraria o requisito de
+abrir `index.html` diretamente, sem instalação nem build.
 
 Existe um build UMD que funcionaria com `<script>` clássico, mas ele
 acrescentaria ao repositório um arquivo minificado de mais de 160 KB, ilegível
-durante a apresentação, para resolver uma validação que aqui cabe em um arquivo
-comentado. A validação vanilla mantém o projeto autocontido e explicável.
+durante a apresentação, para resolver uma validação que aqui cabe em um único
+arquivo comentado.
 
 ---
 
@@ -276,11 +302,10 @@ generosos, sombras de baixa opacidade em camadas e títulos grandes com
 *tracking* negativo. O acento é um terracota, que conversa com a ideia de
 material guardado.
 
-Todos os valores vivem em `css/tokens.css`. Mudar a identidade visual do
-projeto começa — e quase sempre termina — nesse arquivo.
+Todos os valores vivem no bloco `tailwind.config`, no topo do `index.html`.
+Mudar a identidade visual do projeto começa — e quase sempre termina — ali.
 
-A tipografia usa a stack de fontes do sistema. Webfonts exigiriam uma
-requisição externa, o que contraria o requisito de funcionar offline.
+A tipografia usa a stack de fontes do sistema, sem webfonts.
 
 ### Acessibilidade e responsividade
 

@@ -6,45 +6,410 @@
     <title>Daily Artifact</title>
     <meta name="description" content="Um artefato por dia. Uma colecao visual de memorias." />
 
-    <!-- Estilos: tokens, base e layout primeiro; depois componentes e views. -->
-    <link rel="stylesheet" href="./css/tokens.css" />
-    <link rel="stylesheet" href="./css/base.css" />
-    <link rel="stylesheet" href="./css/layout.css" />
-    <link rel="stylesheet" href="./css/components/buttons.css" />
-    <link rel="stylesheet" href="./css/components/forms.css" />
-    <link rel="stylesheet" href="./css/components/cards.css" />
-    <link rel="stylesheet" href="./css/components/tags.css" />
-    <link rel="stylesheet" href="./css/components/modal.css" />
-    <link rel="stylesheet" href="./css/components/toast.css" />
-    <link rel="stylesheet" href="./css/components/empty-state.css" />
-    <link rel="stylesheet" href="./css/views/home.css" />
-    <link rel="stylesheet" href="./css/views/year.css" />
-    <link rel="stylesheet" href="./css/views/collection.css" />
-    <link rel="stylesheet" href="./css/views/detail.css" />
-    <link rel="stylesheet" href="./css/views/editor.css" />
+    <!--
+      Tailwind CSS via Play CDN.
+      ATENCAO: esta e a unica dependencia externa da aplicacao. O Play CDN
+      compila o CSS no proprio navegador, entao a pagina PRECISA de internet
+      para renderizar corretamente. Veja a secao "Tailwind" do README.
+    -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Pinta o fundo antes do Tailwind compilar, evitando um flash branco. -->
+    <style>
+      html { background-color: #f7f5f1; }
+    </style>
+
+    <!--
+      Tema: a identidade visual inteira vive aqui.
+      Mudar as cores, raios ou sombras do projeto comeca (e quase sempre
+      termina) neste bloco.
+    -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              canvas: '#f7f5f1',
+              surface: { DEFAULT: '#fffefb', sunken: '#f1eee8', hover: '#f4f1ea' },
+              ink: { DEFAULT: '#1a1815', muted: '#6d675d', subtle: '#9a938a' },
+              hairline: { DEFAULT: '#e5e0d6', strong: '#d4cdc0' },
+              accent: {
+                DEFAULT: '#b4562f',
+                hover: '#9a4623',
+                soft: '#f3e3d9',
+                ink: '#7d3a1f',
+              },
+              danger: { DEFAULT: '#a33329', soft: '#f8e5e2', hover: '#8c2b22' },
+              success: { DEFAULT: '#4a6b46', soft: '#e6ede3' },
+              artifact: {
+                text: '#6d675d',
+                quote: '#8a5a3c',
+                photo: '#4a6b6b',
+                link: '#4a5a7d',
+                music: '#7d4a6b',
+              },
+            },
+            fontFamily: {
+              sans: ['ui-sans-serif', '-apple-system', 'BlinkMacSystemFont',
+                     'Segoe UI', 'Helvetica Neue', 'Arial', 'sans-serif'],
+              serif: ['ui-serif', 'Georgia', 'Times New Roman', 'serif'],
+            },
+            borderRadius: { card: '16px', panel: '24px' },
+            boxShadow: {
+              subtle: '0 1px 2px rgba(26, 24, 21, 0.04)',
+              soft: '0 1px 2px rgba(26, 24, 21, 0.04), 0 4px 12px rgba(26, 24, 21, 0.05)',
+              lifted: '0 2px 4px rgba(26, 24, 21, 0.04), 0 12px 32px rgba(26, 24, 21, 0.08)',
+            },
+            maxWidth: { content: '68rem', narrow: '40rem' },
+            keyframes: {
+              'view-enter': {
+                from: { opacity: '0', transform: 'translateY(4px)' },
+                to: { opacity: '1', transform: 'none' },
+              },
+              'toast-in': {
+                from: { opacity: '0', transform: 'translateY(8px)' },
+              },
+              'toast-out': {
+                to: { opacity: '0', transform: 'translateX(12px)' },
+              },
+              'toast-pulse': {
+                '0%': { opacity: '0.55', transform: 'scale(1)' },
+                '70%, 100%': { opacity: '0', transform: 'scale(2.8)' },
+              },
+              'modal-fade': { from: { opacity: '0' } },
+              'modal-rise': {
+                from: { opacity: '0', transform: 'translateY(8px) scale(0.98)' },
+              },
+            },
+            animation: {
+              'view-enter': 'view-enter 200ms cubic-bezier(0.2, 0, 0.1, 1)',
+              'toast-in': 'toast-in 200ms cubic-bezier(0.2, 0, 0.1, 1)',
+              'toast-out': 'toast-out 200ms cubic-bezier(0.2, 0, 0.1, 1) forwards',
+              'toast-pulse': 'toast-pulse 1.8s cubic-bezier(0.2, 0, 0.1, 1) infinite',
+              'modal-fade': 'modal-fade 200ms cubic-bezier(0.2, 0, 0.1, 1)',
+              'modal-rise': 'modal-rise 200ms cubic-bezier(0.2, 0, 0.1, 1)',
+            },
+          },
+        },
+      };
+    </script>
+
+    <!--
+      Camada de componentes.
+      Aqui ficam apenas os padroes repetidos e, principalmente, as classes de
+      ESTADO que o JavaScript liga e desliga (toast--success, day--filled,
+      field--invalid). Elas precisam existir de forma estavel, entao sao
+      declaradas com @apply em vez de espalhadas pela marcacao.
+      O restante do layout usa utilitarios do Tailwind direto no HTML.
+
+      Sob o Play CDN este bloco precisa ser inline: o Tailwind so processa
+      <style type="text/tailwindcss"> presente no documento, nao arquivos .css
+      externos.
+    -->
+    <style type="text/tailwindcss">
+      @layer base {
+        body {
+          @apply min-h-screen bg-canvas font-sans text-[0.9375rem] leading-relaxed text-ink antialiased;
+        }
+        h1, h2, h3 {
+          @apply font-semibold leading-tight tracking-tight;
+          text-wrap: balance;
+        }
+        :focus-visible {
+          @apply outline-none ring-2 ring-accent ring-offset-2 ring-offset-canvas rounded;
+        }
+        ::placeholder {
+          @apply text-ink-subtle;
+        }
+        /*
+          O atributo hidden precisa vencer os utilitarios de display.
+          Sem isto, um elemento com class="flex ... " hidden continua visivel,
+          porque display:flex sobrepoe o display:none do navegador. A aplicacao
+          usa hidden para alternar views, campos e estados o tempo todo.
+        */
+        [hidden] {
+          display: none !important;
+        }
+      }
+
+      @layer components {
+        /* ---------------------------------------------------------- Botoes */
+        .button {
+          @apply inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full
+                 border border-transparent px-6 py-3 text-[0.8125rem] font-medium tracking-tight
+                 no-underline transition-all duration-150 active:translate-y-px
+                 disabled:cursor-not-allowed disabled:opacity-50 disabled:translate-y-0;
+        }
+        .button--primary {
+          @apply bg-ink text-surface shadow-subtle hover:bg-[#2e2a25] hover:shadow-soft;
+        }
+        .button--accent {
+          @apply bg-accent text-white shadow-subtle hover:bg-accent-hover hover:shadow-soft;
+        }
+        .button--secondary {
+          @apply border-hairline bg-surface text-ink shadow-subtle
+                 hover:border-hairline-strong hover:bg-surface-hover;
+        }
+        .button--ghost {
+          @apply text-ink-muted hover:bg-surface-hover hover:text-ink;
+        }
+        .button--danger {
+          @apply bg-danger text-white hover:bg-danger-hover;
+        }
+        .button--danger-ghost {
+          @apply text-danger hover:bg-danger-soft;
+        }
+        .button--sm {
+          @apply px-4 py-2 text-xs;
+        }
+        .button--lg {
+          @apply px-8 py-4 text-[0.9375rem];
+        }
+
+        /* ------------------------------------------------------ Formularios */
+        .field {
+          @apply flex flex-col gap-2;
+        }
+        .field__label {
+          @apply text-[0.8125rem] font-medium tracking-tight;
+        }
+        .field__hint {
+          @apply text-xs text-ink-subtle;
+        }
+        .field__error {
+          @apply text-xs text-danger empty:hidden;
+        }
+        .input, .textarea, .select {
+          @apply w-full rounded-[10px] border border-hairline bg-surface px-4 py-3
+                 text-[0.9375rem] text-ink transition-colors
+                 hover:border-hairline-strong
+                 focus:border-accent focus:outline-none focus:ring-[3px] focus:ring-accent/20;
+        }
+        .textarea {
+          @apply min-h-[8rem] resize-y leading-relaxed;
+        }
+        .select {
+          @apply cursor-pointer appearance-none pr-12 bg-no-repeat;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' stroke='%236d675d' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+          background-position: right 1rem center;
+        }
+        /* Estado ligado pelo JS quando a API ou a validacao recusa um campo. */
+        .field--invalid .input,
+        .field--invalid .textarea,
+        .field--invalid .select {
+          @apply border-danger;
+        }
+
+        /* Seletor de tipo do artefato. */
+        .type-option__input {
+          @apply absolute h-px w-px opacity-0;
+        }
+        .type-option__label {
+          @apply flex cursor-pointer items-center justify-center gap-2 rounded-[10px]
+                 border border-hairline bg-surface px-2 py-3 text-[0.8125rem] transition-colors
+                 hover:border-hairline-strong hover:bg-surface-hover;
+        }
+        .type-option__input:checked + .type-option__label {
+          @apply border-accent bg-accent-soft font-medium text-accent-ink;
+        }
+        .type-option__input:focus-visible + .type-option__label {
+          @apply ring-2 ring-accent ring-offset-2 ring-offset-canvas;
+        }
+
+        /* ----------------------------------------------------------- Cards */
+        .card {
+          @apply flex w-full cursor-pointer flex-col gap-3 rounded-card border border-hairline
+                 bg-surface p-6 text-left shadow-subtle transition-all duration-200
+                 hover:-translate-y-0.5 hover:border-hairline-strong hover:shadow-soft;
+        }
+        .card__date {
+          @apply text-xs font-medium tracking-tight text-ink-subtle;
+        }
+        .card__thumb {
+          @apply aspect-[16/10] w-full rounded-[10px] bg-surface-sunken object-cover;
+        }
+        .card__title {
+          @apply text-[0.9375rem] font-semibold leading-snug tracking-tight;
+        }
+        .card__excerpt {
+          @apply line-clamp-3 text-[0.8125rem] leading-snug text-ink-muted;
+        }
+        /* Citacoes ganham destaque tipografico ja no card. */
+        .card--quote .card__excerpt {
+          @apply font-serif text-[1.0625rem] italic text-ink;
+        }
+
+        /* ------------------------------------------------------------ Tags */
+        .tag {
+          @apply inline-flex items-center rounded-full border border-hairline bg-surface-sunken
+                 px-3 py-1 text-xs tracking-tight text-ink-muted;
+        }
+        button.tag {
+          @apply cursor-pointer transition-colors hover:border-accent/25
+                 hover:bg-accent-soft hover:text-accent-ink;
+        }
+        .type-badge {
+          @apply inline-flex items-center gap-2 text-xs font-medium uppercase tracking-widest;
+          color: var(--type-color, #6d675d);
+        }
+        .type-badge::before {
+          content: '';
+          @apply h-1.5 w-1.5 rounded-full bg-current;
+        }
+
+        /* --------------------------------------------- Estados e loading */
+        .empty-state {
+          @apply flex flex-col items-center gap-4 rounded-card border border-dashed
+                 border-hairline-strong bg-surface-sunken px-6 py-16 text-center;
+        }
+        .empty-state__title {
+          @apply text-[1.0625rem] font-medium tracking-tight text-ink;
+        }
+        .empty-state__message {
+          @apply max-w-[32ch] text-[0.8125rem] text-ink-muted;
+        }
+        .loading {
+          @apply py-12 text-center text-[0.8125rem] text-ink-subtle;
+        }
+
+        /* ----------------------------------------------------------- Toast */
+        .toast {
+          @apply pointer-events-auto flex animate-toast-in items-start gap-3 rounded-[10px]
+                 border border-hairline bg-surface p-4 text-[0.8125rem] shadow-lifted;
+        }
+        .toast.is-leaving {
+          @apply animate-toast-out;
+        }
+        /* Ponto indicador: a cor comunica o tipo, o pulso chama a atencao. */
+        .toast__dot {
+          @apply relative mt-[0.4em] h-2 w-2 shrink-0 rounded-full bg-ink-subtle;
+        }
+        .toast__dot::after {
+          content: '';
+          @apply absolute inset-0 animate-toast-pulse rounded-full;
+          background-color: inherit;
+        }
+        .toast--success .toast__dot {
+          @apply bg-success;
+        }
+        .toast--error .toast__dot {
+          @apply bg-danger;
+        }
+        .toast__title {
+          @apply font-semibold tracking-tight;
+        }
+        .toast__message {
+          @apply mt-1 text-ink-muted;
+        }
+        .toast__close {
+          @apply shrink-0 cursor-pointer border-0 bg-transparent px-1 text-[1.0625rem]
+                 leading-none text-ink-subtle hover:text-ink;
+        }
+
+        /* ----------------------------------------------------------- Modal */
+        .modal {
+          @apply fixed inset-0 z-50 grid place-items-center p-4;
+        }
+        .modal__backdrop {
+          @apply absolute inset-0 animate-modal-fade cursor-pointer border-0 p-0
+                 backdrop-blur-[2px];
+          background-color: rgba(26, 24, 21, 0.28);
+        }
+        .modal__dialog {
+          @apply relative w-full max-w-md animate-modal-rise rounded-card border
+                 border-hairline bg-surface p-8 shadow-lifted;
+        }
+
+        /* --------------------------------------------- Calendario do ano */
+        .year-grid {
+          @apply grid gap-6 [grid-template-columns:repeat(auto-fill,minmax(13rem,1fr))];
+        }
+        .month__grid {
+          @apply grid grid-cols-7 gap-[3px];
+        }
+        .day {
+          @apply grid aspect-square place-items-center rounded border-0
+                 bg-surface-sunken p-0 text-[0.625rem] text-ink-subtle;
+        }
+        .day--placeholder {
+          @apply bg-transparent;
+        }
+        /* Dia preenchido: a cor vem do tipo do artefato. */
+        .day--filled {
+          @apply cursor-pointer font-medium text-white transition-transform
+                 hover:scale-[1.18] hover:shadow-soft;
+          background-color: var(--type-color, #b4562f);
+        }
+        .day--today {
+          @apply outline outline-2 outline-offset-1 outline-ink;
+        }
+      }
+
+      /* Cor por tipo de artefato, consumida por .type-badge e .day--filled. */
+      [data-type='text'] { --type-color: #6d675d; }
+      [data-type='quote'] { --type-color: #8a5a3c; }
+      [data-type='photo'] { --type-color: #4a6b6b; }
+      [data-type='link'] { --type-color: #4a5a7d; }
+      [data-type='music'] { --type-color: #7d4a6b; }
+
+      /* Reticencias animadas do indicador de carregamento. */
+      .loading::after {
+        content: '';
+        display: inline-block;
+        width: 0.75em;
+        text-align: left;
+        animation: loading-dots 1.2s steps(4, end) infinite;
+      }
+      @keyframes loading-dots {
+        0% { content: ''; }
+        25% { content: '.'; }
+        50% { content: '..'; }
+        75% { content: '...'; }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
   </head>
 
   <body>
-    <div class="app">
+    <div class="flex min-h-screen flex-col">
       <!-- Aviso exibido quando a API nao responde. -->
-      <div class="connection-banner" id="connection-banner" role="alert" hidden>
-        <div class="connection-banner__inner">
-          <strong>Nao foi possivel conectar a Daily Artifact API.</strong>
+      <div class="border-b border-danger/20 bg-danger-soft text-danger" id="connection-banner"
+        role="alert" hidden>
+        <div class="mx-auto max-w-content px-6 py-3 text-[0.8125rem]">
+          <strong class="font-semibold">Nao foi possivel conectar a Daily Artifact API.</strong>
           Confirme que ela esta rodando em <code id="connection-banner-url"></code>.
         </div>
       </div>
 
-      <header class="app-header">
-        <div class="app-header__inner">
-          <a class="brand" href="#/">
-            <span class="brand__name">Daily Artifact</span>
-            <span class="brand__tagline">One day. One artifact.</span>
+      <header class="sticky top-0 z-10 border-b border-hairline bg-canvas/90 backdrop-blur-xl">
+        <div class="mx-auto flex w-full max-w-content flex-col items-start gap-3 px-4 py-3
+          sm:min-h-[4rem] sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:px-6">
+          <a class="flex items-baseline gap-3 text-ink no-underline hover:text-ink" href="#/">
+            <span class="text-[1.0625rem] font-semibold tracking-tight">Daily Artifact</span>
+            <span class="text-xs tracking-tight text-ink-subtle">One day. One artifact.</span>
           </a>
 
-          <nav class="app-nav" aria-label="Navegacao principal">
-            <a class="app-nav__link" href="#/" data-nav="home">Hoje</a>
-            <a class="app-nav__link" href="#/colecao" data-nav="collection">Colecao</a>
-            <a class="app-nav__link" href="#/ano" data-nav="year">Ano</a>
+          <nav class="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:gap-1"
+            aria-label="Navegacao principal">
+            <a class="rounded-full px-3 py-2 text-[0.8125rem] font-medium text-ink-muted no-underline
+              transition-colors hover:bg-surface-hover hover:text-ink
+              aria-[current=page]:bg-surface aria-[current=page]:text-ink
+              aria-[current=page]:shadow-subtle" href="#/" data-nav="home">Hoje</a>
+            <a class="rounded-full px-3 py-2 text-[0.8125rem] font-medium text-ink-muted no-underline
+              transition-colors hover:bg-surface-hover hover:text-ink
+              aria-[current=page]:bg-surface aria-[current=page]:text-ink
+              aria-[current=page]:shadow-subtle" href="#/colecao" data-nav="collection">Colecao</a>
+            <a class="rounded-full px-3 py-2 text-[0.8125rem] font-medium text-ink-muted no-underline
+              transition-colors hover:bg-surface-hover hover:text-ink
+              aria-[current=page]:bg-surface aria-[current=page]:text-ink
+              aria-[current=page]:shadow-subtle" href="#/ano" data-nav="year">Ano</a>
             <button class="button button--ghost button--sm" type="button" id="surprise-button">
               Me surpreenda
             </button>
@@ -53,21 +418,22 @@
         </div>
       </header>
 
-      <main class="app-main" id="main">
+      <main class="mx-auto w-full max-w-content flex-1 px-4 pb-24 pt-8 sm:px-6 sm:pt-12" id="main">
         <!-- ============================ HOJE ============================ -->
-        <section class="view" data-view="home" aria-labelledby="home-heading" hidden>
-          <h1 class="visually-hidden" id="home-heading">Hoje</h1>
+        <section class="animate-view-enter" data-view="home" aria-labelledby="home-heading" hidden>
+          <h1 class="sr-only" id="home-heading">Hoje</h1>
 
-          <article class="today">
-            <p class="today__weekday" id="today-weekday"></p>
-            <p class="today__date" id="today-date"></p>
+          <article class="rounded-panel border border-hairline bg-surface p-6 shadow-soft sm:p-12">
+            <p class="text-[0.8125rem] font-medium uppercase tracking-widest text-accent"
+              id="today-weekday"></p>
+            <p class="mt-2 text-3xl tracking-tight sm:text-5xl" id="today-date"></p>
 
             <!-- Estado: o dia ainda nao foi registrado. -->
             <div id="today-empty" hidden>
-              <p class="today__prompt">
+              <p class="mt-4 max-w-[34ch] text-[1.0625rem] leading-snug text-ink-muted">
                 Voce ainda nao guardou nada de hoje. O que vale a pena lembrar?
               </p>
-              <div class="today__actions">
+              <div class="mt-8">
                 <a class="button button--accent button--lg" href="#/novo">
                   Registrar o artefato de hoje
                 </a>
@@ -75,22 +441,25 @@
             </div>
 
             <!-- Estado: o dia ja tem um artefato. -->
-            <div class="today__artifact" id="today-filled" hidden>
-              <div class="today__artifact-meta">
+            <div class="mt-8 border-t border-hairline pt-8" id="today-filled" hidden>
+              <div class="mb-4 flex flex-wrap items-center gap-4">
                 <span class="type-badge" id="today-type"></span>
               </div>
-              <h2 class="today__artifact-title" id="today-title"></h2>
-              <img class="today__artifact-image" id="today-image" alt="" hidden />
-              <p class="today__artifact-body" id="today-body"></p>
-              <div class="today__actions">
+              <h2 class="text-2xl tracking-tight" id="today-title"></h2>
+              <img class="mt-4 max-h-[22rem] w-full rounded-card bg-surface-sunken object-cover"
+                id="today-image" alt="" hidden />
+              <p class="mt-3 whitespace-pre-wrap text-[1.0625rem] leading-relaxed text-ink-muted"
+                id="today-body"></p>
+              <div class="mt-8">
                 <a class="button button--secondary" id="today-open" href="#/">Ver o artefato</a>
               </div>
             </div>
           </article>
 
-          <section class="section" aria-labelledby="recent-heading">
-            <div class="section__header">
-              <h2 class="section__title" id="recent-heading">Artefatos recentes</h2>
+          <section class="mt-12 sm:mt-16" aria-labelledby="recent-heading">
+            <div class="mb-6 flex flex-wrap items-baseline justify-between gap-4">
+              <h2 class="text-xs font-semibold uppercase tracking-widest text-ink-subtle"
+                id="recent-heading">Artefatos recentes</h2>
               <a class="button button--ghost button--sm" href="#/colecao">Ver a colecao</a>
             </div>
             <div id="recent-container"></div>
@@ -98,11 +467,15 @@
         </section>
 
         <!-- ========================== COLECAO =========================== -->
-        <section class="view" data-view="collection" aria-labelledby="collection-heading" hidden>
-          <h1 class="editor__title" id="collection-heading">A colecao</h1>
-          <p class="editor__subtitle">Tudo o que voce guardou ate agora.</p>
+        <section class="animate-view-enter" data-view="collection"
+          aria-labelledby="collection-heading" hidden>
+          <h1 class="text-2xl tracking-tight" id="collection-heading">A colecao</h1>
+          <p class="mt-2 text-[0.8125rem] text-ink-muted">Tudo o que voce guardou ate agora.</p>
 
-          <form class="filters" id="filters-form" aria-label="Filtros da colecao">
+          <form class="mb-6 mt-8 grid items-end gap-4 rounded-card border border-hairline
+            bg-surface p-4 shadow-subtle sm:p-6
+            [grid-template-columns:repeat(auto-fit,minmax(9rem,1fr))]"
+            id="filters-form" aria-label="Filtros da colecao">
             <div class="field">
               <label class="field__label" for="filter-type">Tipo</label>
               <select class="select" id="filter-type" name="type">
@@ -134,27 +507,29 @@
               <input class="input" id="filter-tag" name="tag" type="text" placeholder="memoria" />
             </div>
 
-            <div class="filters__actions">
+            <div class="flex gap-2">
               <button class="button button--primary" type="submit">Filtrar</button>
               <button class="button button--ghost" type="button" id="filters-clear">Limpar</button>
             </div>
           </form>
 
-          <p class="filters__summary" id="collection-summary" aria-live="polite"></p>
+          <p class="mb-6 text-[0.8125rem] text-ink-muted" id="collection-summary"
+            aria-live="polite"></p>
           <div id="collection-container"></div>
         </section>
 
         <!-- ============================= ANO ============================ -->
-        <section class="view" data-view="year" aria-labelledby="year-heading" hidden>
-          <div class="year-toolbar">
+        <section class="animate-view-enter" data-view="year" aria-labelledby="year-heading" hidden>
+          <div class="mb-8 flex flex-wrap items-center justify-between gap-4">
             <div>
-              <h1 class="editor__title" id="year-heading">O ano em artefatos</h1>
-              <p class="year-summary" id="year-summary" aria-live="polite"></p>
+              <h1 class="text-2xl tracking-tight" id="year-heading">O ano em artefatos</h1>
+              <p class="text-[0.8125rem] text-ink-muted" id="year-summary" aria-live="polite"></p>
             </div>
-            <div class="year-stepper">
+            <div class="flex items-center gap-3">
               <button class="button button--secondary button--sm" type="button" id="year-prev"
                 aria-label="Ano anterior">&larr;</button>
-              <span class="year-stepper__value" id="year-value"></span>
+              <span class="min-w-[4ch] text-center text-2xl font-semibold tracking-tight"
+                id="year-value"></span>
               <button class="button button--secondary button--sm" type="button" id="year-next"
                 aria-label="Proximo ano">&rarr;</button>
             </div>
@@ -162,48 +537,52 @@
 
           <div id="year-container"></div>
 
-          <div class="year-legend" id="year-legend" hidden>
-            <span class="year-legend__item">
-              <span class="year-legend__swatch year-legend__swatch--empty"></span>
+          <div class="mt-8 flex flex-wrap gap-4 border-t border-hairline pt-6 text-xs text-ink-muted"
+            id="year-legend" hidden>
+            <span class="flex items-center gap-2">
+              <span class="h-2.5 w-2.5 rounded-[3px] border border-hairline-strong
+                bg-surface-sunken"></span>
               Dia sem registro
             </span>
-            <span class="year-legend__item" data-type="text">
-              <span class="year-legend__swatch"></span>Texto
+            <span class="flex items-center gap-2" data-type="text">
+              <span class="h-2.5 w-2.5 rounded-[3px] bg-artifact-text"></span>Texto
             </span>
-            <span class="year-legend__item" data-type="quote">
-              <span class="year-legend__swatch"></span>Citacao
+            <span class="flex items-center gap-2" data-type="quote">
+              <span class="h-2.5 w-2.5 rounded-[3px] bg-artifact-quote"></span>Citacao
             </span>
-            <span class="year-legend__item" data-type="photo">
-              <span class="year-legend__swatch"></span>Foto
+            <span class="flex items-center gap-2" data-type="photo">
+              <span class="h-2.5 w-2.5 rounded-[3px] bg-artifact-photo"></span>Foto
             </span>
-            <span class="year-legend__item" data-type="link">
-              <span class="year-legend__swatch"></span>Link
+            <span class="flex items-center gap-2" data-type="link">
+              <span class="h-2.5 w-2.5 rounded-[3px] bg-artifact-link"></span>Link
             </span>
-            <span class="year-legend__item" data-type="music">
-              <span class="year-legend__swatch"></span>Musica
+            <span class="flex items-center gap-2" data-type="music">
+              <span class="h-2.5 w-2.5 rounded-[3px] bg-artifact-music"></span>Musica
             </span>
           </div>
         </section>
 
         <!-- =========================== DETALHE ========================== -->
-        <section class="view" data-view="detail" aria-labelledby="detail-heading" hidden>
-          <div class="detail" id="detail-container">
-            <h1 class="visually-hidden" id="detail-heading">Detalhe do artefato</h1>
+        <section class="animate-view-enter" data-view="detail" aria-labelledby="detail-heading"
+          hidden>
+          <div class="mx-auto max-w-narrow" id="detail-container">
+            <h1 class="sr-only" id="detail-heading">Detalhe do artefato</h1>
           </div>
         </section>
 
         <!-- ============================ EDITOR ========================== -->
-        <section class="view" data-view="editor" aria-labelledby="editor-heading" hidden>
-          <div class="editor">
-            <div class="editor__header">
-              <h1 class="editor__title" id="editor-heading">Registrar um artefato</h1>
-              <p class="editor__subtitle" id="editor-subtitle">
+        <section class="animate-view-enter" data-view="editor" aria-labelledby="editor-heading"
+          hidden>
+          <div class="mx-auto max-w-narrow">
+            <div class="mb-12">
+              <h1 class="text-2xl tracking-tight" id="editor-heading">Registrar um artefato</h1>
+              <p class="mt-2 text-[0.8125rem] text-ink-muted" id="editor-subtitle">
                 Um dia. Um artefato. Escolha o que representa este dia.
               </p>
             </div>
 
-            <div class="editor__panel">
-              <form class="form" id="artifact-form" novalidate>
+            <div class="rounded-card border border-hairline bg-surface p-6 shadow-subtle sm:p-8">
+              <form class="flex flex-col gap-6" id="artifact-form" novalidate>
                 <div class="field">
                   <label class="field__label" for="form-date">Data</label>
                   <input class="input" id="form-date" name="artifact_date" type="date" required />
@@ -211,29 +590,30 @@
                   <p class="field__error" id="form-date-error" aria-live="polite"></p>
                 </div>
 
-                <fieldset class="type-picker" id="form-type-picker">
-                  <legend class="type-picker__legend">Tipo</legend>
-                  <div class="type-option">
+                <fieldset class="m-0 grid gap-2 border-0 p-0
+                  [grid-template-columns:repeat(auto-fit,minmax(6.5rem,1fr))]" id="form-type-picker">
+                  <legend class="mb-2 p-0 text-[0.8125rem] font-medium">Tipo</legend>
+                  <div class="relative">
                     <input class="type-option__input" type="radio" name="type" id="type-text"
                       value="text" checked />
                     <label class="type-option__label" for="type-text">Texto</label>
                   </div>
-                  <div class="type-option">
+                  <div class="relative">
                     <input class="type-option__input" type="radio" name="type" id="type-quote"
                       value="quote" />
                     <label class="type-option__label" for="type-quote">Citacao</label>
                   </div>
-                  <div class="type-option">
+                  <div class="relative">
                     <input class="type-option__input" type="radio" name="type" id="type-photo"
                       value="photo" />
                     <label class="type-option__label" for="type-photo">Foto</label>
                   </div>
-                  <div class="type-option">
+                  <div class="relative">
                     <input class="type-option__input" type="radio" name="type" id="type-link"
                       value="link" />
                     <label class="type-option__label" for="type-link">Link</label>
                   </div>
-                  <div class="type-option">
+                  <div class="relative">
                     <input class="type-option__input" type="radio" name="type" id="type-music"
                       value="music" />
                     <label class="type-option__label" for="type-music">Musica</label>
@@ -249,8 +629,7 @@
 
                 <div class="field" id="form-url-field" hidden>
                   <label class="field__label" for="form-url">Endereco</label>
-                  <input class="input" id="form-url" name="url" type="url"
-                    placeholder="https://" />
+                  <input class="input" id="form-url" name="url" type="url" placeholder="https://" />
                   <p class="field__hint" id="form-url-hint"></p>
                   <p class="field__error" id="form-url-error" aria-live="polite"></p>
                 </div>
@@ -273,7 +652,8 @@
                   <p class="field__error" id="form-tags-error" aria-live="polite"></p>
                 </div>
 
-                <div class="form__actions">
+                <div class="flex flex-col-reverse flex-wrap gap-3 border-t border-hairline pt-4
+                  sm:flex-row sm:justify-between">
                   <a class="button button--ghost" href="#/" id="form-cancel">Cancelar</a>
                   <button class="button button--accent" type="submit" id="form-submit">
                     Guardar artefato
@@ -285,8 +665,9 @@
         </section>
       </main>
 
-      <footer class="app-footer">
-        <div class="app-footer__inner">
+      <footer class="border-t border-hairline p-6">
+        <div class="mx-auto flex max-w-content flex-wrap justify-between gap-4 text-xs
+          text-ink-subtle">
           <span>Daily Artifact &mdash; uma colecao visual de memorias.</span>
           <span id="footer-api"></span>
         </div>
@@ -294,27 +675,34 @@
     </div>
 
     <!-- Pilha de notificacoes. -->
-    <div class="toast-stack" id="toast-stack" role="status" aria-live="polite"></div>
+    <div class="pointer-events-none fixed bottom-4 right-4 z-[60] flex w-[min(22rem,calc(100vw_-_3rem))]
+      flex-col gap-3 max-sm:left-4 max-sm:w-auto" id="toast-stack" role="status" aria-live="polite">
+    </div>
 
-    <!-- ===================== Templates reutilizaveis ===================== -->
+    <!-- ===================== Templates reutilizaveis =====================
+      A marcacao das estruturas repetidas vive aqui. O JavaScript clona estes
+      templates e preenche os elementos marcados com data-slot, em vez de
+      concatenar strings de HTML.
+    -->
 
     <template id="tpl-card">
       <button class="card" type="button">
-        <div class="card__header">
+        <div class="flex items-center justify-between gap-3">
           <span class="card__date" data-slot="date"></span>
           <span class="type-badge" data-slot="type"></span>
         </div>
         <img class="card__thumb" data-slot="thumb" alt="" hidden />
         <h3 class="card__title" data-slot="title" hidden></h3>
         <p class="card__excerpt" data-slot="excerpt" hidden></p>
-        <div class="card__footer">
-          <ul class="tag-list" data-slot="tags"></ul>
+        <div class="mt-auto pt-2">
+          <ul class="flex flex-wrap gap-2" data-slot="tags"></ul>
         </div>
       </button>
     </template>
 
     <template id="tpl-card-grid">
-      <div class="card-grid" data-slot="grid"></div>
+      <div class="grid gap-4 [grid-template-columns:repeat(auto-fill,minmax(17rem,1fr))]"
+        data-slot="grid"></div>
     </template>
 
     <template id="tpl-tag">
@@ -338,8 +726,9 @@
     </template>
 
     <template id="tpl-month">
-      <section class="month">
-        <h3 class="month__name" data-slot="name"></h3>
+      <section class="rounded-card border border-hairline bg-surface p-4 shadow-subtle">
+        <h3 class="mb-3 text-xs font-semibold uppercase tracking-widest text-ink-subtle"
+          data-slot="name"></h3>
         <div class="month__grid" data-slot="grid"></div>
       </section>
     </template>
@@ -347,7 +736,7 @@
     <template id="tpl-toast">
       <div class="toast">
         <span class="toast__dot" aria-hidden="true"></span>
-        <div class="toast__body">
+        <div class="flex-1">
           <p class="toast__title" data-slot="title"></p>
           <p class="toast__message" data-slot="message" hidden></p>
         </div>
@@ -359,9 +748,9 @@
       <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
         <button class="modal__backdrop" type="button" aria-label="Fechar"></button>
         <div class="modal__dialog">
-          <h2 class="modal__title" id="modal-title" data-slot="title"></h2>
-          <p class="modal__message" data-slot="message"></p>
-          <div class="modal__actions">
+          <h2 class="mb-3 text-[1.0625rem]" id="modal-title" data-slot="title"></h2>
+          <p class="mb-8 text-[0.8125rem] text-ink-muted" data-slot="message"></p>
+          <div class="flex flex-col-reverse justify-end gap-3 sm:flex-row">
             <button class="button button--secondary" type="button" data-slot="cancel"></button>
             <button class="button button--danger" type="button" data-slot="confirm"></button>
           </div>
@@ -370,35 +759,45 @@
     </template>
 
     <template id="tpl-detail">
-      <a class="detail__back" href="#/" data-slot="back">&larr; Voltar</a>
+      <a class="mb-8 inline-flex items-center gap-2 text-[0.8125rem] text-ink-muted no-underline
+        hover:text-ink" href="#/" data-slot="back">&larr; Voltar</a>
 
-      <div class="detail__header">
-        <span class="detail__date" data-slot="date"></span>
+      <div class="mb-4 flex flex-wrap items-center gap-4">
+        <span class="text-[0.8125rem] font-medium text-ink-muted" data-slot="date"></span>
         <span class="type-badge" data-slot="type"></span>
       </div>
 
-      <h2 class="detail__title" data-slot="title" hidden></h2>
+      <h2 class="mb-6 text-2xl tracking-tight" data-slot="title" hidden></h2>
 
-      <div class="detail__body">
-        <p class="detail__text" data-slot="text" hidden></p>
-        <blockquote class="detail__quote" data-slot="quote" hidden></blockquote>
-        <img class="detail__image" data-slot="image" alt="" hidden />
-        <div class="detail__resource" data-slot="resource" hidden>
-          <span class="detail__resource-url" data-slot="url"></span>
+      <div class="rounded-card border border-hairline bg-surface p-6 shadow-subtle sm:p-8">
+        <p class="whitespace-pre-wrap text-[1.0625rem] leading-relaxed" data-slot="text" hidden></p>
+
+        <blockquote class="m-0 font-serif text-2xl italic leading-snug tracking-tight
+          before:text-accent before:content-['\201C'] after:text-accent after:content-['\201D']"
+          data-slot="quote" hidden></blockquote>
+
+        <img class="max-h-[30rem] w-full rounded-[10px] bg-surface-sunken object-cover"
+          data-slot="image" alt="" hidden />
+
+        <div class="flex flex-wrap items-center justify-between gap-4 rounded-[10px] border
+          border-hairline bg-surface-sunken p-4" data-slot="resource" hidden>
+          <span class="break-all text-[0.8125rem]" data-slot="url"></span>
           <a class="button button--secondary button--sm" data-slot="open" target="_blank"
             rel="noopener noreferrer">Abrir</a>
         </div>
-        <p class="detail__caption" data-slot="caption" hidden></p>
+
+        <p class="mt-4 whitespace-pre-wrap text-[0.8125rem] leading-relaxed text-ink-muted"
+          data-slot="caption" hidden></p>
       </div>
 
-      <ul class="tag-list detail__tags" data-slot="tags"></ul>
+      <ul class="mt-6 flex flex-wrap gap-2" data-slot="tags"></ul>
 
-      <div class="detail__meta">
+      <div class="mt-8 flex flex-wrap gap-6 border-t border-hairline pt-6 text-xs text-ink-subtle">
         <span data-slot="created"></span>
         <span data-slot="updated" hidden></span>
       </div>
 
-      <div class="detail__actions">
+      <div class="mt-8 flex flex-wrap justify-between gap-3">
         <a class="button button--secondary" data-slot="edit">Editar</a>
         <button class="button button--danger-ghost" type="button" data-slot="delete">
           Excluir
@@ -406,8 +805,9 @@
       </div>
     </template>
 
-    <!-- =========================== Scripts ============================== -->
-    <!-- Scripts classicos, sem modulos: a pagina precisa abrir via file://. -->
+    <!-- =========================== Scripts ==============================
+      Scripts classicos, sem modulos: a pagina precisa abrir via file://.
+    -->
     <script src="./js/config.js" defer></script>
     <script src="./js/core/dom.js" defer></script>
     <script src="./js/core/dates.js" defer></script>
