@@ -296,9 +296,9 @@ nenhum fluxo, e a exclusão passa por um modal com foco controlado, no lugar de
 
 ## Identidade visual
 
-A referência estética é o [clay.com](https://www.clay.com/): fundo creme
-quente em vez de branco puro, bordas *hairline*, raios generosos, sombras de
-baixa opacidade em camadas e títulos grandes com *tracking* negativo.
+Fundo creme quente em vez de branco puro, bordas *hairline*, raios generosos,
+sombras de baixa opacidade em camadas e títulos grandes com *tracking*
+negativo.
 
 A paleta é inteiramente **terrosa — não há preto nem cinza neutro**. O texto
 principal é um marrom de café (`#3a2a1e`), os tons de apoio são marrons
