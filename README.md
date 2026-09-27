@@ -9,13 +9,29 @@ música ou link).
 A API está em
 [`daily-artifact-server`](https://github.com/Theobhg/daily-artifact-server).
 
-## Como executar
+## Instalação
 
-1. Suba a API em `http://127.0.0.1:8000`.
-2. Abra `index.html` direto no navegador.
+**Pré-requisitos:** um navegador, acesso à internet (o Tailwind é carregado
+via CDN) e a [API](https://github.com/Theobhg/daily-artifact-server) rodando.
 
-Não há instalação nem build. É preciso estar **online**, pois o Tailwind é
-carregado via CDN.
+1. Clone o repositório:
+
+   ```bash
+   git clone https://github.com/Theobhg/daily-artifact-client.git
+   cd daily-artifact-client
+   ```
+
+2. Crie o arquivo de ambiente:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+3. Inicie a API em `http://127.0.0.1:8000` (veja o README do server).
+
+4. Abra o `index.html` direto no navegador.
+
+Não há dependências para instalar nem build.
 
 ## Configuração
 
