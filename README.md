@@ -6,6 +6,9 @@ Frontend do **Daily Artifact**: uma SPA em HTML, Tailwind CSS e JavaScript puro
 onde cada dia é representado por um único artefato (frase, pensamento, foto,
 música ou link).
 
+Projeto de final de trimestre da Pós-Graduação em Engenharia de Software da
+PUC-Rio.
+
 A API está em
 [`daily-artifact-server`](https://github.com/Theobhg/daily-artifact-server).
 
